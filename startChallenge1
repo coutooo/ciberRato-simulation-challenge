@@ -1,0 +1,10 @@
+#/bin/bash
+
+(cd simulator; ./simulator --param ../Labs/PathFinder/rmi-2122/C1-config.xml --lab ../Labs/PathFinder/rmi-2122/C1-lab.xml --grid ../Labs/PathFinder/rmi-2122/C1-grid.xml --scoring 1)&
+
+sleep 1
+
+(cd Viewer; ./Viewer)
+
+killall simulator
+
