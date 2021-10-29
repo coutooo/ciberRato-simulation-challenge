@@ -77,22 +77,36 @@ class MyRob(CRobLinkAngs):
         #    and self.measures.irSensor[left_id]   > 3.0:
         #     print('Rotate Right')
         #     self.driveMotors(+0.05,-0.05)
-        if  self.measures.irSensor[right_id]   > 4:
-            print('Rotate Left')
-            self.driveMotors(-0.15,+0.15)
-        elif self.measures.irSensor[left_id]   > 4:
-            print('Rotate Right')
-            self.driveMotors(+0.15,-0.15)
 
-        elif  self.measures.irSensor[center_id] > 1.1 \
+            # no lo creo
+        # if  abs(self.measures.irSensor[right_id] - self.measures.irSensor[left_id]) > 0.06:
+        #     print(abs(self.measures.irSensor[right_id] - self.measures.irSensor[left_id]))
+        #     if self.measures.irSensor[center_id] > 1 \
+        #     and self.measures.irSensor[right_id]   > self.measures.irSensor[left_id]:
+        #         print('Rotate Left')
+        #         self.driveMotors(-0.10,+0.15)
+        #     elif  self.measures.irSensor[center_id] > 1 \
+        #     and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
+        #         print('Rotate Right')
+        #         self.driveMotors(+0.15,-0.10)
+
+        # tou a usar este
+        if  self.measures.irSensor[right_id]   > 4:
+            print('Rotate slightly Left')
+            self.driveMotors(-0.05,+0.15)
+        elif self.measures.irSensor[left_id]   > 4:
+            print('Rotate slightly Right')
+            self.driveMotors(+0.15,-0.05)
+
+        elif  self.measures.irSensor[center_id] > 1 \
            and self.measures.irSensor[right_id]   > self.measures.irSensor[left_id]:
             print('Rotate Left')
-            self.driveMotors(-0.13,+0.15)
+            self.driveMotors(-0.10,+0.15)
             
-        elif  self.measures.irSensor[center_id] > 1.1 \
+        elif  self.measures.irSensor[center_id] > 1 \
            and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
             print('Rotate Right')
-            self.driveMotors(+0.15,-0.13)
+            self.driveMotors(+0.15,-0.10)
 
         # elif  self.measures.irSensor[center_id] > 1.5\
         #    and self.measures.irSensor[right_id]   > 3.0:
