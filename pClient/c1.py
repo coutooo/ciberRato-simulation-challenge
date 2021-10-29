@@ -79,20 +79,20 @@ class MyRob(CRobLinkAngs):
         #     self.driveMotors(+0.05,-0.05)
         if  self.measures.irSensor[right_id]   > 4:
             print('Rotate Left')
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.15,+0.15)
         elif self.measures.irSensor[left_id]   > 4:
             print('Rotate Right')
-            self.driveMotors(+0.05,-0.05)
+            self.driveMotors(+0.15,-0.15)
 
-        elif  self.measures.irSensor[center_id] > 1 \
+        elif  self.measures.irSensor[center_id] > 1.1 \
            and self.measures.irSensor[right_id]   > self.measures.irSensor[left_id]:
             print('Rotate Left')
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.13,+0.15)
             
-        elif  self.measures.irSensor[center_id] > 1 \
+        elif  self.measures.irSensor[center_id] > 1.1 \
            and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
             print('Rotate Right')
-            self.driveMotors(+0.05,-0.05)
+            self.driveMotors(+0.15,-0.13)
 
         # elif  self.measures.irSensor[center_id] > 1.5\
         #    and self.measures.irSensor[right_id]   > 3.0:
