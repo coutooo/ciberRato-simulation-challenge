@@ -133,6 +133,44 @@ class MyRob(CRobLinkAngs):
         else:
             self.driveMotors(0,0)
 
+    def watch_center(self):
+        center_id = 0
+        left_id = 1
+        right_id = 2
+        back_id = 3        
+        positions=[]
+        
+        if  self.measures.irSensor[center_id] > 2.15:
+            positions[0]= 1
+            print('Parede em frente')
+        else:
+            positions[0] = 0
+            print('Livre em frente')
+
+        if  self.measures.irSensor[left_id] > 2.15:
+            positions[1]= 1
+            print('Parede na direita')
+        else:
+            positions[1] = 0
+            print('Livre na direita')
+
+        if  self.measures.irSensor[right_id] > 2.15:
+            positions[2]= 1
+            print('Parede na esquerda')
+        else:
+            positions[1] = 0
+            print('Livre na esquerda')
+
+        if  self.measures.irSensor[back_id] > 2.15:
+            print('Parede atrás')
+            positions[3]= 1
+        else:
+            positions[3] = 0
+            print('Livre atrás')
+
+        return positions
+            
+
 
             
 
@@ -185,7 +223,7 @@ for i in range(1, len(sys.argv),2):
         quit()
 
 if __name__ == '__main__':
-    rob=MyRob(rob_name,pos,[0.0,60.0,-60.0,180.0],host)
+    rob=MyRob(rob_name,pos,[0.0,90.0,-90.0,180.0],host)
     if mapc != None:
         rob.setMap(mapc.labMap)
         rob.printMap()
