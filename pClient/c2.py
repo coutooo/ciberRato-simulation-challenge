@@ -81,6 +81,15 @@ class MyRob(CRobLinkAngs):
 
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->270  
         print(self.measures.compass)
+
+        # frente,direita,esquerda,atras    
+        walls = self.watch_walls()
+        print(walls)
+
+        espace = 0
+        for i in walls:
+            if i == 0:
+                espace = espace+1
         
         self.rotateDown()
 
@@ -133,12 +142,13 @@ class MyRob(CRobLinkAngs):
         else:
             self.driveMotors(0,0)
 
-    def watch_center(self):
+    def watch_walls(self):
         center_id = 0
         left_id = 1
         right_id = 2
         back_id = 3        
-        positions=[]
+        positions=[0,0,0,0]   # frente,direita,esquerda,atras
+        # parede -> 1 free -> 0
         
         if  self.measures.irSensor[center_id] > 2.15:
             positions[0]= 1
