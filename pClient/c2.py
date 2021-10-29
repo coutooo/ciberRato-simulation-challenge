@@ -69,16 +69,71 @@ class MyRob(CRobLinkAngs):
         right_id = 2
         back_id = 3
        
-        print(self.measures.x)
-        print(self.measures.y)
+        print("x"+str(self.measures.x))
+        print("y"+str(self.measures.y))
 
         # mapa 55 colunas 27 linhas
         # andar 1 linha / coluna  = 1 diametro (temos que andar 2 diametros para ficar no centro da celula)
-        # 'x' -> livre, '|' -> parede vertical, '-' -> parede horizontal, ' '-> desconhecido  
-        posX = self.measures.x
-        while(posX != self.measures.x):
-            self.driveMotors(0.15,0.15)
-            print('Go')
+        # 'x' -> livre, '|' -> parede vertical, '-' -> parede horizontal, ' '-> desconhecido
+        # L = lin + rot/2
+        # rot = k(m -2,17) -> parede da direita  
+
+
+        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->270  
+        print(self.measures.compass)
+        
+        self.rotateDown()
+
+        # goalX = self.measures.x + 0.2
+
+        # self.moveX("{:.1f}".format(goalX))
+
+        # goalY = self.measures.y + 0.2
+
+        # self.moveX("{:.1f}".format(goalY))
+
+    def rotateDown(self):
+        print("hello")
+        if self.measures.compass != -90.0:
+            print('Rotate Left')
+            self.driveMotors(-0.01,+0.01)
+            print(self.measures.compass)
+        else:
+            self.driveMotors(0,0)
+    def rotateLeft(self):
+        if self.measures.compass != 180.0:
+            print('Rotate Left')
+            self.driveMotors(-0.01,+0.01)
+            print(self.measures.compass)
+        else:
+            self.driveMotors(0,0)
+    def rotateUp(self):
+        if self.measures.compass != 90.0:
+            print('Rotate Left')
+            self.driveMotors(-0.01,+0.01)
+            print(self.measures.compass)
+        else:
+            self.driveMotors(0,0)
+    def rotateRight(self):
+        if self.measures.compass != 0.0:
+            print('Rotate Left')
+            self.driveMotors(-0.01,+0.01)
+            print(self.measures.compass)
+        else:
+            self.driveMotors(0,0)
+    def moveX(self,goalX):
+        if(self.measures.x != goalX):
+            self.driveMotors(0.1,0.1)
+        else:
+            self.driveMotors(0,0)
+
+    def moveY(self,goalY):
+        if(self.measures.Y != goalY):
+            self.driveMotors(0.1,0.1)
+        else:
+            self.driveMotors(0,0)
+
+
             
 
             
