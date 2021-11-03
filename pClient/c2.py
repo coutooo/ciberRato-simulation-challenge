@@ -169,42 +169,44 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
-            self.driveMotors(0,0)
+            self.driveMotors(0.01,0.01)
     def rotateLeft(self):
         if self.measures.compass != 180.0:
             print('Rotate Left')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
-            self.driveMotors(0,0)
+            self.driveMotors(0.01,0.01)
     def rotateUp(self):
         if self.measures.compass != 90.0:
             print('Rotate up')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
-            self.driveMotors(0,0)
+            self.driveMotors(0.01,0.01)
     def rotateRight(self):
         if self.measures.compass != 0.0:
             print('Rotate right')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
-            self.driveMotors(0,0)
+            self.driveMotors(0.01,0.01)
 
 
     # andar -----------------
     def moveX(self,goalX):
-        if(self.measures.x != goalX):
-            self.driveMotors(0.01,0.01)
-        if(self.measures.x == goalX):
-            self.driveMotors(0,0)
+        return 0
+        # if(self.measures.x != goalX):
+        #     self.driveMotors(0.01,0.01)
+        # if(self.measures.x == goalX):
+        #     self.driveMotors(0,0)
 
     def moveY(self,goalY):
-        if(self.measures.y != goalY):
-            self.driveMotors(0.01,0.01)
-        if(self.measures.y == goalY):
-            self.driveMotors(0,0)
+        return 0
+        # if(self.measures.y != goalY):
+        #     self.driveMotors(0.01,0.01)
+        # if(self.measures.y == goalY):
+        #     self.driveMotors(0,0)
 
     # identificar paredes ----------------
     def watch_walls(self):
