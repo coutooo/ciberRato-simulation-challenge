@@ -79,10 +79,10 @@ class MyRob(CRobLinkAngs):
         # rot = k(m -2,17) -> parede da direita  
 
 
-        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->270  
+        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
         print(self.measures.compass)
 
-        # frente,direita,esquerda,atras    
+        # frente,direita,esquerda,atras    1 -> parede 0 -> espace
         walls = self.watch_walls()
         print(walls)
 
@@ -90,21 +90,82 @@ class MyRob(CRobLinkAngs):
         for i in walls:
             if i == 0:
                 espace = espace+1
-        
-        self.rotateDown()
+        if espace == 1:
+            if walls[0] == 0:
+                self.rotateRight()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    print("hello")
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls[1] == 0:
+                self.rotateDown()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls [2] == 0:
+                self.rotateUp()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls[3] == 0:
+                self.rotateLeft()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+        elif espace > 1:
+                    # frente,direita,esquerda,atras    1 -> parede 0 -> espace
+            if walls[0] == 0:
+                self.rotateRight()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    print("hello")
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls[0] == 1 and walls[1] == 0:
+                self.rotateDown()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0:
+                self.rotateUp()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
+            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
+                self.rotateLeft()
+                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                    goalX = self.measures.x + 0.2   
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
 
-        # goalX = self.measures.x + 0.2
 
-        # self.moveX("{:.1f}".format(goalX))
-
-        # goalY = self.measures.y + 0.2
-
-        # self.moveX("{:.1f}".format(goalY))
-
+    # rodar ------------------
     def rotateDown(self):
         print("hello")
         if self.measures.compass != -90.0:
-            print('Rotate Left')
+            print('Rotate down')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
@@ -118,30 +179,34 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0,0)
     def rotateUp(self):
         if self.measures.compass != 90.0:
-            print('Rotate Left')
+            print('Rotate up')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
             self.driveMotors(0,0)
     def rotateRight(self):
         if self.measures.compass != 0.0:
-            print('Rotate Left')
+            print('Rotate right')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
         else:
             self.driveMotors(0,0)
+
+
+    # andar -----------------
     def moveX(self,goalX):
         if(self.measures.x != goalX):
-            self.driveMotors(0.1,0.1)
-        else:
+            self.driveMotors(0.01,0.01)
+        if(self.measures.x == goalX):
             self.driveMotors(0,0)
 
     def moveY(self,goalY):
-        if(self.measures.Y != goalY):
-            self.driveMotors(0.1,0.1)
-        else:
+        if(self.measures.y != goalY):
+            self.driveMotors(0.01,0.01)
+        if(self.measures.y == goalY):
             self.driveMotors(0,0)
 
+    # identificar paredes ----------------
     def watch_walls(self):
         center_id = 0
         left_id = 1
