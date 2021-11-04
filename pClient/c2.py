@@ -92,121 +92,143 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
         if espace == 1:
             if walls[0] == 0:
-                self.rotateRight()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    print("hello")
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateRight():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        print("hello")
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateRight()
             elif walls[1] == 0:
-                self.rotateDown()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
-                else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                if self.rotateDown():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
+                else: 
+                    self.rotateDown()
             elif walls [2] == 0:
-                self.rotateUp()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateUp():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateUp()
             elif walls[3] == 0:
-                self.rotateLeft()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateLeft():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateLeft()
         elif espace > 1:
                     # frente,direita,esquerda,atras    1 -> parede 0 -> espace
             if walls[0] == 0:
-                self.rotateRight()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    print("hello")
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateRight():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        print("hello")
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateRight()
             elif walls[0] == 1 and walls[1] == 0:
-                self.rotateDown()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateDown():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateDown()
             elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0:
-                self.rotateUp()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateUp():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateUp()
             elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
-                self.rotateLeft()
-                if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                    goalX = self.measures.x + 0.2   
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateLeft():
+                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
+                        goalX = self.measures.x + 0.2   
+                        self.moveX("{:.1f}".format(goalX))
+                    else:
+                        goalY = self.measures.y + 0.2
+                        self.moveY("{:.1f}".format(goalY))
                 else:
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                    self.rotateLeft()
 
 
     # rodar ------------------
     def rotateDown(self):
-        print("hello")
-        if self.measures.compass != -90.0:
+        if self.measures.compass < -99.0 or self.measures.compass > -80.0:
             print('Rotate down')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
+            return False
         else:
+            print("AQUUIIIIIIIIIII"+str(self.measures.compass))
             self.driveMotors(0.01,0.01)
+            return True
     def rotateLeft(self):
-        if self.measures.compass != 180.0:
+        if self.measures.compass > 190.0 or self.measures.compass < 170.0:
             print('Rotate Left')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
+            return False
         else:
             self.driveMotors(0.01,0.01)
+            return True
     def rotateUp(self):
-        if self.measures.compass != 90.0:
+        if self.measures.compass > 100.0 or self.measures.compass < 80.0:
             print('Rotate up')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
+            return False
         else:
             self.driveMotors(0.01,0.01)
+            return True
     def rotateRight(self):
-        if self.measures.compass != 0.0:
+        if self.measures.compass < -10.0 or self.measures.compass > 10.0:
             print('Rotate right')
             self.driveMotors(-0.01,+0.01)
             print(self.measures.compass)
+            return False
         else:
             self.driveMotors(0.01,0.01)
+            return True
 
 
     # andar -----------------
     def moveX(self,goalX):
-        return 0
-        # if(self.measures.x != goalX):
-        #     self.driveMotors(0.01,0.01)
-        # if(self.measures.x == goalX):
-        #     self.driveMotors(0,0)
+        if(self.measures.x != goalX):
+            self.driveMotors(0.01,0.01)
+        if(self.measures.x == goalX):
+            self.driveMotors(0,0)
 
     def moveY(self,goalY):
-        return 0
-        # if(self.measures.y != goalY):
-        #     self.driveMotors(0.01,0.01)
-        # if(self.measures.y == goalY):
-        #     self.driveMotors(0,0)
+        if(self.measures.y != goalY):
+            self.driveMotors(0.01,0.01)
+        if(self.measures.y == goalY):
+            self.driveMotors(0,0)
 
     # identificar paredes ----------------
     def watch_walls(self):
