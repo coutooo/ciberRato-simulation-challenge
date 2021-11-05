@@ -92,89 +92,55 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
         if espace == 1:
             if walls[0] == 0:
-                if self.rotateRight():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        print("hello")
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
+                if self.rotateUp():
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
                 else:
-                    self.rotateRight()
+                    self.rotateUp()
             elif walls[1] == 0:
-                if self.rotateDown():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
+                if self.rotateRight():
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
                 else: 
-                    self.rotateDown()
+                    self.rotateRight()
             elif walls [2] == 0:
-                if self.rotateUp():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
-                else:
-                    self.rotateUp()
-            elif walls[3] == 0:
                 if self.rotateLeft():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
                 else:
                     self.rotateLeft()
+            elif walls[3] == 0:
+                if self.rotateDown():
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    self.rotateDown()
         elif espace > 1:
-                    # frente,direita,esquerda,atras    1 -> parede 0 -> espace
+                    # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
             if walls[0] == 0:
+                if self.rotateUp():
+                    goalX = self.measures.x + 0.2
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    self.rotateUp()
+            elif walls[0] == 1 and walls[1] == 0:
                 if self.rotateRight():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        print("hello")
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
                 else:
                     self.rotateRight()
-            elif walls[0] == 1 and walls[1] == 0:
-                if self.rotateDown():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
-                else:
-                    self.rotateDown()
             elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0:
-                if self.rotateUp():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
-                else:
-                    self.rotateUp()
-            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
                 if self.rotateLeft():
-                    if self.measures.compass == 0.0 or self.measures.compass ==180.0:
-                        goalX = self.measures.x + 0.2   
-                        self.moveX("{:.1f}".format(goalX))
-                    else:
-                        goalY = self.measures.y + 0.2
-                        self.moveY("{:.1f}".format(goalY))
+                    goalY = self.measures.y + 0.2
+                    self.moveY("{:.1f}".format(goalY))
                 else:
                     self.rotateLeft()
+            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
+                if self.rotateDown():
+                    goalX = self.measures.x + 0.2   
+                    self.moveX("{:.1f}".format(goalX))
+                else:
+                    self.rotateDown()
 
 
     # rodar ------------------
@@ -185,8 +151,6 @@ class MyRob(CRobLinkAngs):
             print(self.measures.compass)
             return False
         else:
-            print("AQUUIIIIIIIIIII"+str(self.measures.compass))
-            self.driveMotors(0.01,0.01)
             return True
     def rotateLeft(self):
         if self.measures.compass > 190.0 or self.measures.compass < 170.0:
@@ -195,7 +159,6 @@ class MyRob(CRobLinkAngs):
             print(self.measures.compass)
             return False
         else:
-            self.driveMotors(0.01,0.01)
             return True
     def rotateUp(self):
         if self.measures.compass > 100.0 or self.measures.compass < 80.0:
@@ -204,7 +167,6 @@ class MyRob(CRobLinkAngs):
             print(self.measures.compass)
             return False
         else:
-            self.driveMotors(0.01,0.01)
             return True
     def rotateRight(self):
         if self.measures.compass < -10.0 or self.measures.compass > 10.0:
@@ -213,7 +175,6 @@ class MyRob(CRobLinkAngs):
             print(self.measures.compass)
             return False
         else:
-            self.driveMotors(0.01,0.01)
             return True
 
 
@@ -236,44 +197,127 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3        
-        positions=[0,0,0,0]   # frente,direita,esquerda,atras
+        positions=[0,0,0,0]   # cima,direita,esquerda,baixo
         # parede -> 1 free -> 0
         
-        if  self.measures.irSensor[center_id] > 2.15:
-            positions[0]= 1
-            print('Parede em frente')
-        else:
-            positions[0] = 0
-            print('Livre em frente')
+        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
+        if self.measures.compass > -10.0 and self.measures.compass < 10:
+            if  self.measures.irSensor[center_id] > 2.10:
+                positions[1]= 1
+                print('Parede a direita')
+            else:
+                positions[1] = 0
+                print('Livre a direita')
 
-        if  self.measures.irSensor[left_id] > 2.15:
-            positions[1]= 1
-            print('Parede na direita')
-        else:
-            positions[1] = 0
-            print('Livre na direita')
+            if  self.measures.irSensor[left_id] > 2.10:
+                positions[0]= 1
+                print('Parede cima')
+            else:
+                positions[0] = 0
+                print('Livre cima')
 
-        if  self.measures.irSensor[right_id] > 2.15:
-            positions[2]= 1
-            print('Parede na esquerda')
-        else:
-            positions[1] = 0
-            print('Livre na esquerda')
+            if  self.measures.irSensor[right_id] > 2.10:
+                positions[3]= 1
+                print('Parede em baixo')
+            else:
+                positions[3] = 0
+                print('Livre em baixo')
 
-        if  self.measures.irSensor[back_id] > 2.15:
-            print('Parede atrás')
-            positions[3]= 1
-        else:
-            positions[3] = 0
-            print('Livre atrás')
+            if  self.measures.irSensor[back_id] > 2.10:
+                print('Parede Esquerda')
+                positions[2]= 1
+            else:
+                positions[2] = 0
+                print('Livre Esquerda')
 
-        return positions
+        elif self.measures.compass > 80.0 and self.measures.compass < 100.0:
+            if  self.measures.irSensor[center_id] > 2.10:
+                positions[0]= 1
+                print('Parede em cima')
+            else:
+                positions[0] = 0
+                print('Livre em cima')
+
+            if  self.measures.irSensor[left_id] > 2.10:
+                positions[2]= 1
+                print('Parede esquerda')
+            else:
+                positions[2] = 0
+                print('Livre Esquerda')
+
+            if  self.measures.irSensor[right_id] > 2.10:
+                positions[1]= 1
+                print('Parede direita')
+            else:
+                positions[1] = 0
+                print('Livre direita')
+
+            if  self.measures.irSensor[back_id] > 2.10:
+                print('Parede baixo')
+                positions[3]= 1
+            else:
+                positions[3] = 0
+                print('Livre baixo')
+        
+        elif self.measures.compass > 170.0 or self.measures.compass < -170.0:
+            if  self.measures.irSensor[center_id] > 2.10:
+                positions[2]= 1
+                print('Parede equerda')
+            else:
+                positions[2] = 0
+                print('Livre esquerda')
+
+            if  self.measures.irSensor[left_id] > 2.10:
+                positions[3]= 1
+                print('Parede baixo')
+            else:
+                positions[3] = 0
+                print('Livre baixo')
+
+            if  self.measures.irSensor[right_id] > 2.10:
+                positions[0]= 1
+                print('Parede cima')
+            else:
+                positions[0] = 0
+                print('Livre cima')
+
+            if  self.measures.irSensor[back_id] > 2.10:
+                print('Parede direita')
+                positions[1]= 1
+            else:
+                positions[1] = 0
+                print('Livre direita')
             
+        elif self.measures.compass > -80 and self.measures.compass < -100:
+            if  self.measures.irSensor[center_id] > 2.10:
+                positions[3]= 1
+                print('Parede baixo')
+            else:
+                positions[3] = 0
+                print('Livre baixo')
 
+            if  self.measures.irSensor[left_id] > 2.10:
+                positions[1]= 1
+                print('Parede direita')
+            else:
+                positions[1] = 0
+                print('Livre direita')
 
-            
+            if  self.measures.irSensor[right_id] > 2.10:
+                positions[2]= 1
+                print('Parede esquerda')
+            else:
+                positions[2] = 0
+                print('Livre esquerda')
 
-            
+            if  self.measures.irSensor[back_id] > 2.10:
+                print('Parede cima')
+                positions[0]= 1
+            else:
+                positions[0] = 0
+                print('Livre cima')
+
+        return positions 
 
 class Map():
     def __init__(self, filename):
