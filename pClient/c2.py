@@ -86,6 +86,11 @@ class MyRob(CRobLinkAngs):
         walls = self.watch_walls()
         print(walls)
 
+
+        # to do :
+        # pegar na posicao inicial e somar a variavel e incrementar 0.2 na variavel
+        # em vez de somar 0.2 a posicao q mando
+        
         espace = 0
         for i in walls:
             if i == 0:
