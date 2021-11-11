@@ -8,11 +8,14 @@ CELLROWS=7
 CELLCOLS=14
 
 class MyRob(CRobLinkAngs):
+    positionInitX = 0.0
+    positionInitY = 0.0
+    moving = False
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
 
     # In this map the center of cell (i,j), (i in 0..6, j in 0..13) is mapped to labMap[i*2][j*2].
-    # to know if there is a wall on top of cell(i,j) (i in 0..5), check if the value of labMap[i*2+1][j*2] is space or not
+    # to know if there is a wall on top of cell(i,j) (i in 0..5), check if the value of labMap[i*2+1][j*2] is space and not
     def setMap(self, labMap):
         self.labMap = labMap
 
@@ -41,12 +44,15 @@ class MyRob(CRobLinkAngs):
             if state != 'stop' and self.measures.stop:
                 stopped_state = state
                 state = 'stop'
-
+            
             if state == 'run':
                 if self.measures.visitingLed==True:
                     state='wait'
                 if self.measures.ground==0:
-                    self.setVisitingLed(True);
+                    self.setVisitingLed(True)
+
+                self.positionInitY = self.measures.y + 2
+                self.positionInitX = self.measures.x + 2
                 self.wander()
             elif state=='wait':
                 self.setReturningLed(True)
@@ -68,9 +74,6 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-       
-        print("x"+str(self.measures.x))
-        print("y"+str(self.measures.y))
 
         # mapa 55 colunas 27 linhas
         # andar 1 linha / coluna  = 1 diametro (temos que andar 2 diametros para ficar no centro da celula)
@@ -80,121 +83,125 @@ class MyRob(CRobLinkAngs):
 
 
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
-        print(self.measures.compass)
 
         # frente,direita,esquerda,atras    1 -> parede 0 -> espace
         walls = self.watch_walls()
-        print(walls)
-
+        print("x:",self.measures.x,"y:",self.measures.y)
+        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY,"\n")
+        print("moving",self.moving)
+        print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
 
         # to do :
         # pegar na posicao inicial e somar a variavel e incrementar 0.2 na variavel
         # em vez de somar 0.2 a posicao q mando
-        
+
         espace = 0
         for i in walls:
             if i == 0:
                 espace = espace+1
+
         if espace == 1:
             if walls[0] == 0:
-                if self.rotateUp():
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateUp() and not self.moving:
+                    self.positionInitY = self.positionInitY + 2
+                    self.moveY()
                 else:
                     self.rotateUp()
             elif walls[1] == 0:
-                if self.rotateRight():
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
-                else: 
+                if self.rotateRight() and not self.moving:
+                    self.positionInitX = self.positionInitX + 2
+                    self.moveX()
+                else:
                     self.rotateRight()
             elif walls [2] == 0:
-                if self.rotateLeft():
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                if self.rotateLeft() and not self.moving:
+                    self.positionInitX = self.positionInitX - 2
+                    self.moveX()
                 else:
                     self.rotateLeft()
             elif walls[3] == 0:
-                if self.rotateDown():
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateDown() and not self.moving:
+                    self.positionInitY = self.positionInitY - 2
+                    self.moveY()
                 else:
                     self.rotateDown()
-        elif espace > 1:
+        elif espace > 1 and not self.moveX() and not self.moving:
                     # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
             if walls[0] == 0:
-                if self.rotateUp():
-                    goalX = self.measures.x + 0.2
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateUp() and not self.moving:
+                    self.positionInitY = self.positionInitY + 2
+                    self.moveY()
                 else:
                     self.rotateUp()
             elif walls[0] == 1 and walls[1] == 0:
-                if self.rotateRight():
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                if self.rotateRight() and not self.moving:
+                    self.positionInitX = self.positionInitX + 2
+                    self.moveX()
                 else:
                     self.rotateRight()
             elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0:
-                if self.rotateLeft():
-                    goalY = self.measures.y + 0.2
-                    self.moveY("{:.1f}".format(goalY))
+                if self.rotateLeft() and not self.moving:
+                    self.positionInitX = self.positionInitX - 2
+                    self.moveX()
                 else:
                     self.rotateLeft()
             elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
-                if self.rotateDown():
-                    goalX = self.measures.x + 0.2   
-                    self.moveX("{:.1f}".format(goalX))
+                if self.rotateDown() and not self.moving:
+                    self.positionInitY = self.positionInitY - 2   
+                    self.moveY()
                 else:
                     self.rotateDown()
+        else:
+            print("esperar q anda")
 
 
     # rodar ------------------
     def rotateDown(self):
-        if self.measures.compass < -99.0 or self.measures.compass > -80.0:
-            print('Rotate down')
+        # -90 graus
+        if self.measures.compass < -95.0 or self.measures.compass > -85.0:
             self.driveMotors(-0.01,+0.01)
-            print(self.measures.compass)
             return False
         else:
             return True
     def rotateLeft(self):
-        if self.measures.compass > 190.0 or self.measures.compass < 170.0:
-            print('Rotate Left')
+        # 180 graus
+        if self.measures.compass > 185.0 or self.measures.compass < 175.0:
             self.driveMotors(-0.01,+0.01)
-            print(self.measures.compass)
             return False
         else:
             return True
     def rotateUp(self):
-        if self.measures.compass > 100.0 or self.measures.compass < 80.0:
-            print('Rotate up')
+        # 90 graus
+        if self.measures.compass > 95.0 or self.measures.compass < 85.0:
             self.driveMotors(-0.01,+0.01)
-            print(self.measures.compass)
             return False
         else:
             return True
     def rotateRight(self):
-        if self.measures.compass < -10.0 or self.measures.compass > 10.0:
-            print('Rotate right')
+        # 0 graus
+        if self.measures.compass < -5.0 or self.measures.compass > 5.0:
             self.driveMotors(-0.01,+0.01)
-            print(self.measures.compass)
             return False
         else:
             return True
 
 
     # andar -----------------
-    def moveX(self,goalX):
-        if(self.measures.x != goalX):
+    def moveX(self):
+        if("{:.1f}".format(self.measures.x) != "{:.1f}".format(self.positionInitX)):
             self.driveMotors(0.01,0.01)
-        if(self.measures.x == goalX):
-            self.driveMotors(0,0)
+            self.moving = True
+        if("{:.1f}".format(self.measures.x) == "{:.1f}".format(self.positionInitX)):
+            print("feitoooooooooooooo")
+            self.moving = False
 
-    def moveY(self,goalY):
-        if(self.measures.y != goalY):
+    def moveY(self):
+        if("{:.1f}".format(self.measures.y) != "{:.1f}".format(self.positionInitY)):
             self.driveMotors(0.01,0.01)
-        if(self.measures.y == goalY):
-            self.driveMotors(0,0)
+            self.moving = True
+        if("{:.1f}".format(self.measures.y) == "{:.1f}".format(self.positionInitY)):
+            print("feitooooooooooooo")
+            self.moving = False
 
     # identificar paredes ----------------
     def watch_walls(self):
@@ -209,118 +216,85 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > -10.0 and self.measures.compass < 10:
             if  self.measures.irSensor[center_id] > 2.10:
                 positions[1]= 1
-                print('Parede a direita')
             else:
                 positions[1] = 0
-                print('Livre a direita')
 
             if  self.measures.irSensor[left_id] > 2.10:
                 positions[0]= 1
-                print('Parede cima')
             else:
                 positions[0] = 0
-                print('Livre cima')
 
             if  self.measures.irSensor[right_id] > 2.10:
                 positions[3]= 1
-                print('Parede em baixo')
             else:
                 positions[3] = 0
-                print('Livre em baixo')
 
             if  self.measures.irSensor[back_id] > 2.10:
-                print('Parede Esquerda')
                 positions[2]= 1
             else:
                 positions[2] = 0
-                print('Livre Esquerda')
 
         elif self.measures.compass > 80.0 and self.measures.compass < 100.0:
             if  self.measures.irSensor[center_id] > 2.10:
                 positions[0]= 1
-                print('Parede em cima')
             else:
                 positions[0] = 0
-                print('Livre em cima')
-
             if  self.measures.irSensor[left_id] > 2.10:
                 positions[2]= 1
-                print('Parede esquerda')
             else:
                 positions[2] = 0
-                print('Livre Esquerda')
 
             if  self.measures.irSensor[right_id] > 2.10:
                 positions[1]= 1
-                print('Parede direita')
             else:
                 positions[1] = 0
-                print('Livre direita')
 
             if  self.measures.irSensor[back_id] > 2.10:
-                print('Parede baixo')
                 positions[3]= 1
             else:
                 positions[3] = 0
-                print('Livre baixo')
         
         elif self.measures.compass > 170.0 or self.measures.compass < -170.0:
             if  self.measures.irSensor[center_id] > 2.10:
                 positions[2]= 1
-                print('Parede equerda')
             else:
                 positions[2] = 0
-                print('Livre esquerda')
 
             if  self.measures.irSensor[left_id] > 2.10:
                 positions[3]= 1
-                print('Parede baixo')
             else:
                 positions[3] = 0
-                print('Livre baixo')
 
             if  self.measures.irSensor[right_id] > 2.10:
                 positions[0]= 1
-                print('Parede cima')
             else:
                 positions[0] = 0
-                print('Livre cima')
 
             if  self.measures.irSensor[back_id] > 2.10:
-                print('Parede direita')
                 positions[1]= 1
             else:
                 positions[1] = 0
-                print('Livre direita')
             
         elif self.measures.compass > -80 and self.measures.compass < -100:
             if  self.measures.irSensor[center_id] > 2.10:
                 positions[3]= 1
-                print('Parede baixo')
             else:
                 positions[3] = 0
-                print('Livre baixo')
 
             if  self.measures.irSensor[left_id] > 2.10:
                 positions[1]= 1
-                print('Parede direita')
             else:
                 positions[1] = 0
-                print('Livre direita')
 
             if  self.measures.irSensor[right_id] > 2.10:
                 positions[2]= 1
-                print('Parede esquerda')
             else:
                 positions[2] = 0
-                print('Livre esquerda')
 
             if  self.measures.irSensor[back_id] > 2.10:
-                print('Parede cima')
                 positions[0]= 1
             else:
                 positions[0] = 0
-                print('Livre cima')
 
         return positions 
 
