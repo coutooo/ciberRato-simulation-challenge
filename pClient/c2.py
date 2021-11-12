@@ -1,4 +1,4 @@
-
+import numpy as np
 import sys
 from croblink import *
 from math import *
@@ -11,6 +11,9 @@ class MyRob(CRobLinkAngs):
     positionInitX = 0.0
     positionInitY = 0.0
     moving = False
+
+    mapaC2 = np.zeros(shape=(27,55))
+
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
 
@@ -288,6 +291,34 @@ class MyRob(CRobLinkAngs):
                 positions[0] = 0
 
         return positions 
+    
+    def write_mapaC2(self):
+        file = 'test.txt'
+        np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')
+
+        fin = open(file, "rt")
+        #read file contents to string
+        data = fin.read()
+        # 'x' -> livre,
+        # '|' -> parede vertical, 
+        # '-' -> parede horizontal, 
+        # ' '-> desconhecido
+        # 1 -> 'x' 
+        # 2 -> '|' 
+        # 3 -> '-'
+        data = data.replace('0', ' ')
+        data = data.replace('1', 'x')
+        data = data.replace('2', '|')
+        data = data.replace('3', '-')
+
+        #close the input file
+        fin.close()
+        #open the input file in write mode
+        fin = open(file, "wt")
+        #overrite the input file with the resulting data
+        fin.write(data)
+        #close the file
+        fin.close()
 
 class Map():
     def __init__(self, filename):
