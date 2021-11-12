@@ -99,7 +99,6 @@ class MyRob(CRobLinkAngs):
         for i in walls:
             if i == 0:
                 espace = espace+1
-
         if espace == 1:
             if walls[0] == 0:
                 if self.rotateUp() and not self.moving:
@@ -145,12 +144,6 @@ class MyRob(CRobLinkAngs):
                     self.moveX()
                 else:
                     self.rotateLeft()
-            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 1 and walls[3] == 0:
-                if self.rotateDown() and not self.moving:
-                    self.positionInitY = self.positionInitY - 2   
-                    self.moveY()
-                else:
-                    self.rotateDown()
         else:
             print("esperar q anda")
 
@@ -192,7 +185,6 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.01,0.01)
             self.moving = True
         if("{:.1f}".format(self.measures.x) == "{:.1f}".format(self.positionInitX)):
-            print("feitoooooooooooooo")
             self.moving = False
 
     def moveY(self):
@@ -200,7 +192,6 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.01,0.01)
             self.moving = True
         if("{:.1f}".format(self.measures.y) == "{:.1f}".format(self.positionInitY)):
-            print("feitooooooooooooo")
             self.moving = False
 
     # identificar paredes ----------------
@@ -214,84 +205,84 @@ class MyRob(CRobLinkAngs):
         
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
         if self.measures.compass > -10.0 and self.measures.compass < 10:
-            if  self.measures.irSensor[center_id] > 2.10:
+            if  self.measures.irSensor[center_id] > 1.00:
                 positions[1]= 1
             else:
                 positions[1] = 0
 
-            if  self.measures.irSensor[left_id] > 2.10:
+            if  self.measures.irSensor[left_id] > 1.00:
                 positions[0]= 1
             else:
                 positions[0] = 0
 
-            if  self.measures.irSensor[right_id] > 2.10:
+            if  self.measures.irSensor[right_id] > 1.00:
                 positions[3]= 1
             else:
                 positions[3] = 0
 
-            if  self.measures.irSensor[back_id] > 2.10:
+            if  self.measures.irSensor[back_id] > 1.00:
                 positions[2]= 1
             else:
                 positions[2] = 0
 
         elif self.measures.compass > 80.0 and self.measures.compass < 100.0:
-            if  self.measures.irSensor[center_id] > 2.10:
+            if  self.measures.irSensor[center_id] > 1.00:
                 positions[0]= 1
             else:
                 positions[0] = 0
-            if  self.measures.irSensor[left_id] > 2.10:
+            if  self.measures.irSensor[left_id] > 1.00:
                 positions[2]= 1
             else:
                 positions[2] = 0
 
-            if  self.measures.irSensor[right_id] > 2.10:
+            if  self.measures.irSensor[right_id] > 1.00:
                 positions[1]= 1
             else:
                 positions[1] = 0
 
-            if  self.measures.irSensor[back_id] > 2.10:
+            if  self.measures.irSensor[back_id] > 1.00:
                 positions[3]= 1
             else:
                 positions[3] = 0
         
         elif self.measures.compass > 170.0 or self.measures.compass < -170.0:
-            if  self.measures.irSensor[center_id] > 2.10:
+            if  self.measures.irSensor[center_id] > 1.00:
                 positions[2]= 1
             else:
                 positions[2] = 0
 
-            if  self.measures.irSensor[left_id] > 2.10:
+            if  self.measures.irSensor[left_id] > 1.00:
                 positions[3]= 1
             else:
                 positions[3] = 0
 
-            if  self.measures.irSensor[right_id] > 2.10:
+            if  self.measures.irSensor[right_id] > 1.00:
                 positions[0]= 1
             else:
                 positions[0] = 0
 
-            if  self.measures.irSensor[back_id] > 2.10:
+            if  self.measures.irSensor[back_id] > 1.00:
                 positions[1]= 1
             else:
                 positions[1] = 0
             
         elif self.measures.compass > -80 and self.measures.compass < -100:
-            if  self.measures.irSensor[center_id] > 2.10:
+            if  self.measures.irSensor[center_id] > 1.00:
                 positions[3]= 1
             else:
                 positions[3] = 0
 
-            if  self.measures.irSensor[left_id] > 2.10:
+            if  self.measures.irSensor[left_id] > 1.00:
                 positions[1]= 1
             else:
                 positions[1] = 0
 
-            if  self.measures.irSensor[right_id] > 2.10:
+            if  self.measures.irSensor[right_id] > 1.00:
                 positions[2]= 1
             else:
                 positions[2] = 0
 
-            if  self.measures.irSensor[back_id] > 2.10:
+            if  self.measures.irSensor[back_id] > 1.00:
                 positions[0]= 1
             else:
                 positions[0] = 0
