@@ -2,16 +2,11 @@ def main():
     d = {
         5 : "batata"
     } 
-    asd = ""
-    for c in d.get(5):
-     if c == "b":
-        asd += "a"
-     else:
-         asd += c
-    d[5] = asd
+    
+    a = "joao"
 
-    print(d.get(5))
+    tmp = a[3]
 
-    print(d.get(5))
+    print(tmp)
 if __name__ == "__main__":
     main()
