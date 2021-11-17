@@ -276,9 +276,9 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
 
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
             else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
             else:
@@ -288,9 +288,10 @@ class MyRob(CRobLinkAngs):
             else:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
             else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     def moveY(self):
@@ -310,9 +311,9 @@ class MyRob(CRobLinkAngs):
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
             else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
             else:
@@ -322,9 +323,10 @@ class MyRob(CRobLinkAngs):
             else:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mappin+1),'-')
             else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     # identificar paredes ----------------
