@@ -1,4 +1,5 @@
 #import numpy as np
+import operator
 import sys
 from croblink import *
 from math import *
@@ -117,13 +118,51 @@ class MyRob(CRobLinkAngs):
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo
             if key in self.visited_cells:
                 if self.visited_cells.get(key) == "cccc":
+                    prox_cell={}  #dicionario com as celullas disponiveis e a distancia
                     for k in self.visited_cells:                    # ----------------------
                         o_count = 0
                         for i in self.visited_cells.get(k):
                             if i == "o":
                                 o_count += 1
                         if o_count > 0:
-                            print("OOOOOOOOOOOOOOOOOOOOOOOOOO",k)   # so para ver se tava certo
+                            distance = ((key[0] - k[0])**2 + (key[1] - k[1])**2)**0.5
+                            prox_cell[k]=distance
+                    sorted_prox_cell = sorted(prox_cell.items(), key=operator.itemgetter(1))
+                    
+                    print("ir para celula mais proxima")
+                    destino_x = sorted_prox_cell[0][0][0]
+                    destino_y = sorted_prox_cell[0][0][1]
+                    
+                    #print(key)
+                    #print(destino_x,destino_y)
+                    caminho = (destino_x-key[0],destino_y-key[1])
+                    mod_caminho = (caminho[0]**2+caminho[1]**2)**0.5
+                    #print(caminho)
+                    #print(mod_caminho)
+
+                    
+                    if mod_caminho == 2.0:                     #andar só uma celula
+                        if caminho[0] > 0 and caminho[1] == 0:  
+                            print("ir para a direita")
+                            self.rotateRight()
+                            #...
+                        elif caminho[0] < 0 and caminho[1] == 0:
+                            print("ir para a esquerda")
+                            self.rotateLeft()
+                            #...
+                        elif caminho[0] == 0 and caminho[1] > 0:
+                            print("ir para cima")
+                            self.rotateUp()
+                            #...
+                        elif caminho[0] == 0 and caminho[1] < 0:
+                            print("ir para baixo")
+                            self.rotateDown()
+                            #...
+                        else:
+                            print ("nada")
+                    else:
+                        print("celula a mais de um quadrado de distancia")       
+
 
                 elif self.visited_cells.get(key)[0] == 'o' :
                         if self.rotateUp():
