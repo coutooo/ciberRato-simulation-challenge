@@ -1,4 +1,4 @@
-import numpy as np
+#import numpy as np
 import sys
 from croblink import *
 from math import *
@@ -11,8 +11,12 @@ class MyRob(CRobLinkAngs):
     positionInitX = 0.0
     positionInitY = 0.0
     moving = False
+    visited_cells = {}         #  (coordx,coordy) : "string de "o" e "c"   <- o = open , c = close
+    mapping = {(28,14): 'I'} # 28,14 -> meio do mapa (27.5,13.5)
+    x_for_mapping = 0
+    y_for_mapping = 0
 
-    mapaC2 = np.zeros(shape=(27,55))
+    #mapaC2 = np.zeros(shape=(27,55))
 
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
@@ -42,6 +46,9 @@ class MyRob(CRobLinkAngs):
                 quit()
 
             if state == 'stop' and self.measures.start:
+                self.positionInitY = self.measures.y
+                self.positionInitX = self.measures.x
+                self.moving = False
                 state = stopped_state
 
             if state != 'stop' and self.measures.stop:
@@ -53,9 +60,6 @@ class MyRob(CRobLinkAngs):
                     state='wait'
                 if self.measures.ground==0:
                     self.setVisitingLed(True)
-
-                self.positionInitY = self.measures.y
-                self.positionInitX = self.measures.x 
                 self.wander()
             elif state=='wait':
                 self.setReturningLed(True)
@@ -84,99 +88,170 @@ class MyRob(CRobLinkAngs):
         # L = lin + rot/2
         # rot = k(m -2,17) -> parede da direita  
 
-
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
-
-        # frente,direita,esquerda,atras    1 -> parede 0 -> espace
         walls = self.watch_walls()
         print("x:",self.measures.x,"y:",self.measures.y)
         print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY,"\n")
         print("moving",self.moving)
         print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        print(self.visited_cells)
+        print(self.mapping)
 
-        # to do :
-        # pegar na posicao inicial e somar a variavel e incrementar 0.2 na variavel
-        # em vez de somar 0.2 a posicao q mando
+        key2 = ((self.x_for_mapping+2),self.y_for_mapping)
+        if key2 in self.visited_cells:
+            print(key2)
+            print(self.visited_cells.get(key2)[1])
 
         espace = 0
         for i in walls:
             if i == 0:
                 espace = espace+1
-        if espace == 1:
-            if walls[0] == 0:
-                if self.rotateUp() and not self.moving:
-                    self.positionInitY = self.positionInitY + 2
-                    self.moveY()
-                else:
-                    self.rotateUp()
-            elif walls[1] == 0:
-                if self.rotateRight() and not self.moving:
-                    self.positionInitX = self.positionInitX + 2
-                    self.moveX()
-                else:
-                    self.rotateRight()
-            elif walls [2] == 0:
-                if self.rotateLeft() and not self.moving:
-                    self.positionInitX = self.positionInitX - 2
-                    self.moveX()
-                else:
-                    self.rotateLeft()
-            elif walls[3] == 0:
-                if self.rotateDown() and not self.moving:
-                    self.positionInitY = self.positionInitY - 2
-                    self.moveY()
-                else:
-                    self.rotateDown()
-        elif espace > 1 and not self.moveX() and not self.moving:
-                    # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
-            if walls[0] == 0:
-                if self.rotateUp() and not self.moving:
-                    self.positionInitY = self.positionInitY + 2
-                    self.moveY()
-                else:
-                    self.rotateUp()
-            elif walls[0] == 1 and walls[1] == 0:
-                if self.rotateRight() and not self.moving:
-                    self.positionInitX = self.positionInitX + 2
-                    self.moveX()
-                else:
-                    self.rotateRight()
-            elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0:
-                if self.rotateLeft() and not self.moving:
-                    self.positionInitX = self.positionInitX - 2
-                    self.moveX()
-                else:
-                    self.rotateLeft()
+
+
+        # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
+        if not self.moving:
+            key = (self.x_for_mapping,self.y_for_mapping)
+            key1 = (self.x_for_mapping,(self.y_for_mapping +2))
+            key2 = ((self.x_for_mapping+2),self.y_for_mapping)
+            key3 = ((self.x_for_mapping-2),self.y_for_mapping)
+            key4 = (self.x_for_mapping,(self.y_for_mapping-2))
+            if key in self.visited_cells:
+                print("ola")
+                if self.visited_cells.get(key)[0] == 'o':
+                        if self.rotateUp():
+                            value = ""
+                            value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                            self.visited_cells[key] = value
+                            self.positionInitY = self.positionInitY + 2
+                            self.y_for_mapping = self.y_for_mapping + 2
+                            self.moveY()
+                        else:
+                            self.rotateUp()
+                elif self.visited_cells.get(key)[1] == 'o':
+                        if self.rotateRight():
+                            value = ""
+                            value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                            self.visited_cells[key] = value
+                            self.positionInitX = self.positionInitX + 2
+                            self.x_for_mapping = self.x_for_mapping + 2
+                            self.moveX()
+                        else:
+                            self.rotateRight()
+                elif self.visited_cells.get(key)[2] == 'o':
+                        if self.rotateLeft():
+                            value = ""
+                            value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
+                            self.visited_cells[key] = value
+                            self.positionInitX = self.positionInitX - 2
+                            self.x_for_mapping = self.x_for_mapping - 2
+                            self.moveX()
+                        else:
+                            self.rotateLeft()
+                elif self.visited_cells.get(key)[3] == 'o':
+                        if self.rotateDown():
+                            value = ""
+                            value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
+                            self.visited_cells[key] = value
+                            self.positionInitY = self.positionInitY - 2
+                            self.y_for_mapping = self.y_for_mapping - 2
+                            self.moveY()
+                        else:
+                            self.rotateDown()
+            else:
+                if espace == 1:
+                    if walls[0] == 0 and (key1 not in self.visited_cells or
+                    self.visited_cells.get(key)[0] == 'o'):
+                        if self.rotateUp():
+                            self.positionInitY = self.positionInitY + 2
+                            self.y_for_mapping = self.y_for_mapping + 2
+                            self.moveY()
+                        else:
+                            self.rotateUp()
+                    elif walls[1] == 0 and ( key2 not in self.visited_cells or
+                    self.visited_cells.get(key)[1] == 'o'):
+                        if self.rotateRight():
+                            self.positionInitX = self.positionInitX + 2
+                            self.x_for_mapping = self.x_for_mapping + 2
+                            self.moveX()
+                        else:
+                            self.rotateRight()
+                    elif walls [2] == 0 and (key3 not in self.visited_cells or
+                    self.visited_cells.get(key)[2] == 'o'):
+                        if self.rotateLeft():
+                            self.positionInitX = self.positionInitX - 2
+                            self.x_for_mapping = self.x_for_mapping - 2
+                            self.moveX()
+                        else:
+                            self.rotateLeft()
+                    elif walls[3] == 0 and (key4 not in self.visited_cells or
+                    self.visited_cells.get(key)[3] == 'o'):
+                        if self.rotateDown():
+                            self.positionInitY = self.positionInitY - 2
+                            self.y_for_mapping = self.y_for_mapping - 2
+                            self.moveY()
+                        else:
+                            self.rotateDown()
+                elif espace > 1:
+                            # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
+                    if walls[0] == 0 and (key1 not in self.visited_cells or
+                    self.visited_cells.get(key)[0] == 'o'):
+                        if self.rotateUp():
+                            self.positionInitY = self.positionInitY + 2
+                            self.y_for_mapping = self.y_for_mapping + 2
+                            self.moveY()
+                        else:
+                            self.rotateUp()
+                    elif walls[0] == 1 and walls[1] == 0 and (key2 not in self.visited_cells or
+                    self.visited_cells.get(key)[1] == 'o'):
+                        if self.rotateRight():
+                            self.positionInitX = self.positionInitX + 2
+                            self.x_for_mapping = self.x_for_mapping + 2
+                            self.moveX()
+                        else:
+                            self.rotateRight()
+                    elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0 and (key3 not in self.visited_cells or
+                    self.visited_cells.get(key)[2] == 'o'):
+                        if self.rotateLeft():
+                            self.positionInitX = self.positionInitX - 2
+                            self.x_for_mapping = self.x_for_mapping - 2
+                            self.moveX()
+                        else:
+                            self.rotateLeft()
         else:
+            # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
             print("esperar q anda")
+            if (self.measures.compass > 80 and self.measures.compass < 100) or (self.measures.compass > -100 and self.measures.compass < -80):
+                self.moveY()
+            else:
+                self.moveX()
 
 
     # rodar ------------------
     def rotateDown(self):
         # -90 graus
         if self.measures.compass < -95.0 or self.measures.compass > -85.0:
-            self.driveMotors(-0.01,+0.01)
+            self.driveMotors(-0.05,+0.05)
             return False
         else:
             return True
     def rotateLeft(self):
         # 180 graus
         if self.measures.compass > 185.0 or self.measures.compass < 175.0:
-            self.driveMotors(-0.01,+0.01)
+            self.driveMotors(-0.05,+0.05)
             return False
         else:
             return True
     def rotateUp(self):
         # 90 graus
         if self.measures.compass > 95.0 or self.measures.compass < 85.0:
-            self.driveMotors(-0.01,+0.01)
+            self.driveMotors(-0.05,+0.05)
             return False
         else:
             return True
     def rotateRight(self):
         # 0 graus
         if self.measures.compass < -5.0 or self.measures.compass > 5.0:
-            self.driveMotors(-0.01,+0.01)
+            self.driveMotors(-0.05,+0.05)
             return False
         else:
             return True
@@ -184,17 +259,72 @@ class MyRob(CRobLinkAngs):
 
     # andar -----------------
     def moveX(self):
-        if("{:.1f}".format(self.measures.x) != "{:.1f}".format(self.positionInitX)):
-            self.driveMotors(0.01,0.01)
+        if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) > 0.2):
+            self.driveMotors(0.10,0.10)
             self.moving = True
-        if("{:.1f}".format(self.measures.x) == "{:.1f}".format(self.positionInitX)):
+        if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) < 0.2):
+            self.driveMotors(0.00,0.00)
+            walls = self.watch_walls()
+            key = (self.x_for_mapping,self.y_for_mapping)
+            espace = ""
+            for i in walls:
+                if i == 0:
+                    espace += "o"           #o = open
+                else:
+                    espace += "c"           #c = close
+            if key not in self.visited_cells:
+                self.visited_cells[key] = espace
+
+            if walls[0] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            if walls[1] == 1:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
+            else:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
+            if walls[2] == 1:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
+            else:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
+            if walls[3] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             self.moving = False
 
     def moveY(self):
-        if("{:.1f}".format(self.measures.y) != "{:.1f}".format(self.positionInitY)):
-            self.driveMotors(0.01,0.01)
+        if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) > 0.2):
+            self.driveMotors(0.10,0.10)
             self.moving = True
-        if("{:.1f}".format(self.measures.y) == "{:.1f}".format(self.positionInitY)):
+        if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) < 0.2):
+            self.driveMotors(0.00,0.00)
+            walls = self.watch_walls()
+            key = (self.x_for_mapping,self.y_for_mapping)
+            espace = ""
+            for i in walls:
+                if i == 0:
+                    espace += "o"           #o = open
+                else:
+                    espace += "c"           #c = close
+            if key not in self.visited_cells:
+                self.visited_cells[key] = espace
+            if walls[0] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            if walls[1] == 1:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
+            else:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
+            if walls[2] == 1:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
+            else:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
+            if walls[3] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             self.moving = False
 
     # identificar paredes ----------------
@@ -233,6 +363,7 @@ class MyRob(CRobLinkAngs):
                 positions[0]= 1
             else:
                 positions[0] = 0
+
             if  self.measures.irSensor[left_id] > 1.00:
                 positions[2]= 1
             else:
@@ -289,36 +420,53 @@ class MyRob(CRobLinkAngs):
                 positions[0]= 1
             else:
                 positions[0] = 0
-
+            
+        self.mapping_output()
         return positions 
-    
-    def write_mapaC2(self):
-        file = 'test.txt'
-        np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')
 
-        fin = open(file, "rt")
-        #read file contents to string
-        data = fin.read()
-        # 'x' -> livre,
-        # '|' -> parede vertical, 
-        # '-' -> parede horizontal, 
-        # ' '-> desconhecido
-        # 1 -> 'x' 
-        # 2 -> '|' 
-        # 3 -> '-'
-        data = data.replace('0', ' ')
-        data = data.replace('1', 'x')
-        data = data.replace('2', '|')
-        data = data.replace('3', '-')
+    def insert_mapping(self, key, symbol):
+        if key not in self.mapping or self.mapping.get(key) == 'X':
+            print(self.mapping.get(key))
+            self.mapping[key] = str(symbol)
 
-        #close the input file
-        fin.close()
-        #open the input file in write mode
-        fin = open(file, "wt")
-        #overrite the input file with the resulting data
-        fin.write(data)
-        #close the file
-        fin.close()
+    def mapping_output(self):
+        f = open("mapping.out",'w')
+        for x in range(1,27):
+            for y in range(1,55):
+                if(y,x) in self.mapping:
+                    f.write(self.mapping.get((y,x)))
+                else:
+                    f.write(' ')
+            f.write('\n')
+        f.close()
+
+    # def write_mapaC2(self):
+    #     file = 'test.txt'
+    #     np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')
+
+    #     fin = open(file, "rt")
+    #     #read file contents to string
+    #     data = fin.read()
+    #     # 'x' -> livre,
+    #     # '|' -> parede vertical, 
+    #     # '-' -> parede horizontal, 
+    #     # ' '-> desconhecido
+    #     # 1 -> 'x' 
+    #     # 2 -> '|' 
+    #     # 3 -> '-'
+    #     data = data.replace('0', ' ')
+    #     data = data.replace('1', 'x')
+    #     data = data.replace('2', '|')
+    #     data = data.replace('3', '-')
+
+    #     #close the input file
+    #     fin.close()
+    #     #open the input file in write mode
+    #     fin = open(file, "wt")
+    #     #overrite the input file with the resulting data
+    #     fin.write(data)
+    #     #close the file
+    #     fin.close()
 
 class Map():
     def __init__(self, filename):
