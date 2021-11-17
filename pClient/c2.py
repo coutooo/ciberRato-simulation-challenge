@@ -116,9 +116,15 @@ class MyRob(CRobLinkAngs):
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo
             if key in self.visited_cells:
-                print("ola")
                 if self.visited_cells.get(key) == "cccc":
-                    print("yessirrrrrrrrrrrrrrrrrrrr")
+                    for k in self.visited_cells:                    # ----------------------
+                        o_count = 0
+                        for i in self.visited_cells.get(k):
+                            if i == "o":
+                                o_count += 1
+                        if o_count > 0:
+                            print("OOOOOOOOOOOOOOOOOOOOOOOOOO",k)   # so para ver se tava certo
+
                 elif self.visited_cells.get(key)[0] == 'o' :
                         if self.rotateUp():
                             value = ""
