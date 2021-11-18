@@ -4,6 +4,7 @@ import sys
 from croblink import *
 from math import *
 import xml.etree.ElementTree as ET
+from astar import *
 
 CELLROWS=7
 CELLCOLS=14
@@ -86,22 +87,13 @@ class MyRob(CRobLinkAngs):
         # mapa 55 colunas 27 linhas
         # andar 1 linha / coluna  = 1 diametro (temos que andar 2 diametros para ficar no centro da celula)
         # 'x' -> livre, '|' -> parede vertical, '-' -> parede horizontal, ' '-> desconhecido
-        # L = lin + rot/2
-        # rot = k(m -2,17) -> parede da direita  
 
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
         walls = self.watch_walls()
         print("x:",self.measures.x,"y:",self.measures.y)
         print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY,"\n")
-        print("moving",self.moving)
         print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         print(self.visited_cells)
-        print(self.mapping)
-
-        key2 = ((self.x_for_mapping+2),self.y_for_mapping)
-        if key2 in self.visited_cells:
-            print(key2)
-            print(self.visited_cells.get(key2)[1])
 
         espace = 0
         for i in walls:
@@ -111,14 +103,18 @@ class MyRob(CRobLinkAngs):
 
         # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
         if not self.moving:
-            key = (self.x_for_mapping,self.y_for_mapping)
+            key = (self.x_for_mapping,self.y_for_mapping)       # atual
             key1 = (self.x_for_mapping,(self.y_for_mapping +2)) # cima
             key2 = ((self.x_for_mapping+2),self.y_for_mapping)  # direita
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo
             if key in self.visited_cells:
                 if self.visited_cells.get(key) == "cccc":
-                    prox_cell={}  #dicionario com as celullas disponiveis e a distancia
+                    arr = []
+                    for x,y in self.visited_cells.keys():
+                        arr.append(tuple([x,y]))
+                        
+                    prox_cell={}  #dicionario com as celullas disponiveis e a distancia  (x,y) : distance
                     for k in self.visited_cells:                    # ----------------------
                         o_count = 0
                         for i in self.visited_cells.get(k):
@@ -127,43 +123,48 @@ class MyRob(CRobLinkAngs):
                         if o_count > 0:
                             distance = ((key[0] - k[0])**2 + (key[1] - k[1])**2)**0.5
                             prox_cell[k]=distance
+                    
                     sorted_prox_cell = sorted(prox_cell.items(), key=operator.itemgetter(1))
                     
-                    print("ir para celula mais proxima")
-                    destino_x = sorted_prox_cell[0][0][0]
-                    destino_y = sorted_prox_cell[0][0][1]
+                    destino_x = sorted_prox_cell[0][0][0]               # x destino
+                    destino_y = sorted_prox_cell[0][0][1]               # y destino
                     
-                    #print(key)
-                    #print(destino_x,destino_y)
-                    caminho = (destino_x-key[0],destino_y-key[1])
-                    mod_caminho = (caminho[0]**2+caminho[1]**2)**0.5
-                    #print(caminho)
-                    #print(mod_caminho)
+                    print("arr:",arr,"start:",key,"goal",(destino_x,destino_y))
+                    asd = astar(arr,key,(destino_x,destino_y))
+                    print("astar:",asd)
 
-                    
-                    if mod_caminho == 2.0:                     #andar só uma celula
-                        if caminho[0] > 0 and caminho[1] == 0:  
-                            print("ir para a direita")
-                            self.rotateRight()
-                            #...
-                        elif caminho[0] < 0 and caminho[1] == 0:
-                            print("ir para a esquerda")
-                            self.rotateLeft()
-                            #...
-                        elif caminho[0] == 0 and caminho[1] > 0:
-                            print("ir para cima")
-                            self.rotateUp()
-                            #...
-                        elif caminho[0] == 0 and caminho[1] < 0:
-                            print("ir para baixo")
-                            self.rotateDown()
-                            #...
+                    caminho = (destino_x-key[0],destino_y-key[1])       # distancia x e do y correto
+                    print("caminho:",caminho)
+
+                    if destino_x != self.x_for_mapping:
+                        self.x_for_mapping = destino_x
+                        if caminho[0] < 0:
+                            if self.rotateLeft():
+                                self.positionInitX = self.positionInitX + caminho[0]
+                                self.moveX()
+                            else:
+                                self.rotateLeft()
                         else:
-                            print ("nada")
-                    else:
-                        print("celula a mais de um quadrado de distancia")       
-
-
+                            if self.rotateRight():
+                                self.positionInitX = self.positionInitX + caminho[0]
+                                self.moveX()
+                            else:
+                                self.rotateRight()
+                        
+                    if destino_y != self.y_for_mapping:
+                        self.y_for_mapping = destino_y
+                        if caminho[1] < 0:
+                            if self.rotateDown():
+                                self.positionInitY = self.positionInitY + caminho[1]
+                                self.moveY
+                            else:
+                                self.rotateDown()
+                        else:
+                            if self.rotateUp():
+                                self.positionInitY = self.positionInitY + caminho[1]
+                                self.moveY
+                            else:
+                                self.rotateUp()
                 elif self.visited_cells.get(key)[0] == 'o' :
                         if self.rotateUp():
                             value = ""
@@ -288,28 +289,28 @@ class MyRob(CRobLinkAngs):
     def rotateDown(self):
         # -90 graus
         if self.measures.compass < -95.0 or self.measures.compass > -85.0:
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.03,+0.03)
             return False
         else:
             return True
     def rotateLeft(self):
         # 180 graus
         if self.measures.compass > 185.0 or self.measures.compass < 175.0:
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.03,+0.03)
             return False
         else:
             return True
     def rotateUp(self):
         # 90 graus
         if self.measures.compass > 95.0 or self.measures.compass < 85.0:
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.03,+0.03)
             return False
         else:
             return True
     def rotateRight(self):
         # 0 graus
         if self.measures.compass < -5.0 or self.measures.compass > 5.0:
-            self.driveMotors(-0.05,+0.05)
+            self.driveMotors(-0.03,+0.03)
             return False
         else:
             return True
@@ -318,7 +319,11 @@ class MyRob(CRobLinkAngs):
     # andar -----------------
     def moveX(self):
         if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) > 0.2):
-            self.driveMotors(0.10,0.10)
+            if self.measures.compass > -10.0 and self.measures.compass < 10:
+                self.align(0.10,self.measures.compass,0.05,0)
+            else:
+                #self.align(0.10,self.measures.compass,0.05,180)   # 180 ou -180 falta corrigir
+                self.driveMotors(0.10,0.10)
             self.moving = True
         if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) < 0.2):
             self.driveMotors(0.00,0.00)
@@ -361,8 +366,14 @@ class MyRob(CRobLinkAngs):
             self.moving = False
 
     def moveY(self):
+        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) > 0.2):
-            self.driveMotors(0.10,0.10)
+            if self.measures.compass > 80.0 and self.measures.compass < 100.0:
+                self.align(0.10,self.measures.compass,0.05,90)
+            else:
+                self.align(0.10,self.measures.compass,0.05,-90)
+            #self.driveMotors(0.10,0.10)
+
             self.moving = True
         if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) < 0.2):
             self.driveMotors(0.00,0.00)
@@ -500,6 +511,17 @@ class MyRob(CRobLinkAngs):
             
         self.mapping_output()
         return positions 
+
+
+    # L = lin + rot/2
+    # rot = k(m -2,17) -> parede da direita  
+    def align(self, linear, m, k, ref):
+        rot = k * (m-ref)
+
+        right_wheel = linear - (rot/2)
+        left_wheel = linear + (rot/2)
+
+        self.driveMotors(left_wheel,right_wheel)
 
     def insert_mapping(self, key, symbol):
         if key not in self.mapping or self.mapping.get(key) == 'X':
