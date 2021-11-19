@@ -124,8 +124,10 @@ class MyRob(CRobLinkAngs):
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo key4
             if key in self.visited_cells:
                 if self.visited_cells.get(key) == "cccc":
-                    sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # - esquerda + direita
-                    sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # - baixo + cima
+                    sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
+                    sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
+                    lastx = self.x_for_mapping
+                    lasty = self.y_for_mapping
                     if sentidoX == 0:
                         if sentidoY > 0:
                             if self.rotateDown():
@@ -172,15 +174,17 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
-                    if (self.x_for_mapping,self.y_for_mapping) in self.last_cells:
-                        self.last_cells.remove((self.x_for_mapping,self.y_for_mapping))
+                    if (lastx,lasty) in self.last_cells:
+                        self.last_cells.remove((lastx,lasty))
+                        print("removiii:",lastx,lasty)
 
                 elif self.visited_cells.get(key)[0] == 'o' and key1 not in self.last_cells:
                         if self.rotateUp():
                             value = ""
                             value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -192,7 +196,8 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
@@ -204,7 +209,8 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -216,7 +222,8 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
                             self.visited_cells[key] = value
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
@@ -227,7 +234,8 @@ class MyRob(CRobLinkAngs):
                 if espace == 1:
                     if walls[0] == 0:
                         if self.rotateUp():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -236,7 +244,8 @@ class MyRob(CRobLinkAngs):
                             self.rotateUp()
                     elif walls[1] == 0:
                         if self.rotateRight():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
@@ -245,7 +254,8 @@ class MyRob(CRobLinkAngs):
                             self.rotateRight()
                     elif walls [2] == 0:
                         if self.rotateLeft():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -254,7 +264,8 @@ class MyRob(CRobLinkAngs):
                             self.rotateLeft()
                     elif walls[3] == 0:
                         if self.rotateDown():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
@@ -265,7 +276,8 @@ class MyRob(CRobLinkAngs):
                             #cima key1 | direita key2 | esquerda key3 | baixo key4
                     if walls[0] == 0 and key1 not in self.last_cells:
                         if self.rotateUp():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -274,7 +286,8 @@ class MyRob(CRobLinkAngs):
                             self.rotateUp()
                     elif walls[0] == 1 and walls[1] == 0 and key2 not in self.last_cells:
                         if self.rotateRight():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
@@ -283,7 +296,8 @@ class MyRob(CRobLinkAngs):
                             self.rotateRight()
                     elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0 and key3 not in self.last_cells:
                         if self.rotateLeft():
-                            self.last_cells.append(key)
+                            if key not in self.last_cells:
+                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -310,8 +324,8 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateLeft(self):
-        # 180 graus
-        if self.measures.compass > 185.0 or self.measures.compass < 175.0:
+        # 180 graus e -180
+        if self.measures.compass > -175 and self.measures.compass < 175.0:
             print("rotate left")
             self.driveMotors(-0.03,+0.03)
             return False
