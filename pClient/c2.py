@@ -172,72 +172,10 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
-                    # print("1111",self.x_for_mapping,self.y_for_mapping)
-                    # self.x_for_mapping = self.last_cells[len(self.last_cells)-1][0]
-                    # self.y_for_mapping = self.last_cells[len(self.last_cells)-1][1]
-                    # print("2222",self.x_for_mapping,self.y_for_mapping)
                     if (self.x_for_mapping,self.y_for_mapping) in self.last_cells:
                         self.last_cells.remove((self.x_for_mapping,self.y_for_mapping))
 
-
-                    # arr = []
-                    # for x,y in self.visited_cells.keys():
-                    #     arr.append(tuple([x,y]))
-                        
-                    # prox_cell={}  #dicionario com as celullas disponiveis e a distancia  (x,y) : distance
-                    # for k in self.visited_cells:                    # ----------------------
-                    #     o_count = 0
-                    #     for i in self.visited_cells.get(k):
-                    #         if i == "o":
-                    #             o_count += 1
-                    #     if o_count > 0:
-                    #         distance = ((key[0] - k[0])**2 + (key[1] - k[1])**2)**0.5
-                    #         prox_cell[k]=distance
-                    
-                    # sorted_prox_cell = sorted(prox_cell.items(), key=operator.itemgetter(1))
-                    
-                    # destino_x = sorted_prox_cell[0][0][0]               # x destino
-                    # destino_y = sorted_prox_cell[0][0][1]               # y destino
-                    # walls_astar = []
-                    # for x,y in self.walls_spotted:
-                    #     walls_astar.append(tuple([x,y])) 
-                    # print("arr:",arr,"start:",key,"goal",tuple([destino_x,destino_y]),"walls:",walls_astar)
-                    # asd = astar(key,(destino_x,destino_y),arr,walls_astar)
-                    # print("astar:",asd)
-
-                    # caminho = (destino_x-key[0],destino_y-key[1])       # distancia x e do y correto
-                    # print("caminho:",caminho)
-
-                    # if destino_x != self.x_for_mapping:
-                    #     self.x_for_mapping = destino_x
-                    #     if caminho[0] < 0:
-                    #         if self.rotateLeft():
-                    #             self.positionInitX = self.positionInitX + caminho[0]
-                    #             self.moveX()
-                    #         else:
-                    #             self.rotateLeft()
-                    #     else:
-                    #         if self.rotateRight():
-                    #             self.positionInitX = self.positionInitX + caminho[0]
-                    #             self.moveX()
-                    #         else:
-                    #             self.rotateRight()
-                        
-                    # if destino_y != self.y_for_mapping:
-                    #     self.y_for_mapping = destino_y
-                    #     if caminho[1] < 0:
-                    #         if self.rotateDown():
-                    #             self.positionInitY = self.positionInitY + caminho[1]
-                    #             self.moveY
-                    #         else:
-                    #             self.rotateDown()
-                    #     else:
-                    #         if self.rotateUp():
-                    #             self.positionInitY = self.positionInitY + caminho[1]
-                    #             self.moveY
-                    #         else:
-                    #             self.rotateUp()
-                elif self.visited_cells.get(key)[0] == 'o' :
+                elif self.visited_cells.get(key)[0] == 'o' and key1 not in self.last_cells:
                         if self.rotateUp():
                             value = ""
                             value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
@@ -401,9 +339,9 @@ class MyRob(CRobLinkAngs):
     def moveX(self):
         if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) > 0.2):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.10,self.measures.compass,0.05,0)
+                self.align(0.15,self.measures.compass,0.05,0)
             else:
-                self.align(0.10,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
+                self.align(0.15,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
             self.moving = True
         if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) < 0.2):
             self.driveMotors(0.00,0.00)
@@ -449,9 +387,9 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) > 0.2):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.10,self.measures.compass,0.05,90)
+                self.align(0.15,self.measures.compass,0.05,90)
             else:
-                self.align(0.10,self.measures.compass,0.05,-90)
+                self.align(0.15,self.measures.compass,0.05,-90)
             #self.driveMotors(0.10,0.10)
 
             self.moving = True
@@ -459,7 +397,7 @@ class MyRob(CRobLinkAngs):
             self.driveMotors(0.00,0.00)
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
-            espace = ""
+            espace = "" 
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
@@ -469,11 +407,10 @@ class MyRob(CRobLinkAngs):
             # cima,direita,esquerda,baixo
             tmp = ""
             if self.came_from == "up":
-                tmp += "c" +espace[1] + espace[2] + espace[3]
+                tmp += espace[0] +espace[1] + espace[2] + "c"
             elif self.came_from == "down":
-                tmp += espace[0] + espace[1] + espace[2] +"c" 
+                tmp += "c" + espace[1] + espace[2] + espace[3] 
             espace = tmp
-
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
             if walls[0] == 1:
