@@ -403,8 +403,7 @@ class MyRob(CRobLinkAngs):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
                 self.align(0.10,self.measures.compass,0.05,0)
             else:
-                #self.align(0.10,self.measures.compass,0.05,180)   # 180 ou -180 falta corrigir
-                self.driveMotors(0.10,0.10)
+                self.align(0.10,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
             self.moving = True
         if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) < 0.2):
             self.driveMotors(0.00,0.00)
@@ -490,7 +489,7 @@ class MyRob(CRobLinkAngs):
             else:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mappin+1),'-')
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
             self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
@@ -581,7 +580,7 @@ class MyRob(CRobLinkAngs):
             else:
                 positions[1] = 0
             
-        elif self.measures.compass > -80 and self.measures.compass < -100:
+        elif self.measures.compass < -80 and self.measures.compass > -100:
             if  self.measures.irSensor[center_id] > 1.00:
                 positions[3]= 1
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
