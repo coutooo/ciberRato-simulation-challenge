@@ -1,58 +1,66 @@
 from heapq import *
 
 def heuristic(a, b):
-    return (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2
+    return (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) *(b[1] - a[1])
 
-def astar(array, start, goal):
+def astar(start, goal,array,walls):
 
     neighbors = [(0,2),(0,-2),(2,0),(-2,0)]
 
     close_set = set()
     came_from = {}
-    g = {start:0}
-    f = {start:heuristic(start, goal)}
+    gscore = {start:0}
+    fscore = {start:heuristic(start, goal)}
     oheap = []
-    c=0
-    heappush(oheap, (f[start], start))
+
+    heappush(oheap, (fscore[start], start))
     
     while oheap:
 
         current = heappop(oheap)[1]
-        # print(current)
 
         if current == goal:
             data = []
-            c+=1
             while current in came_from:
-                
                 data.append(current)
                 current = came_from[current]
             #data.append(start)
-            # print(c)
-            return [start] + data[::-1]
+            return data
 
         close_set.add(current)
+        print("neighbors:",neighbors)
         for i, j in neighbors:
             neighbor = current[0] + i, current[1] + j            
-            tentative_g_score = g[current] + heuristic(current, neighbor)
-            if 0 <= neighbor[0] < len(array):
-                if 0 <= neighbor[1] < len(array[0]):                
-                    if array[neighbor[0]][neighbor[1]] == 1:
-                        continue
-                else:
-                    # array bound y walls
-                    continue
-            else:
-                # array bound x walls
+            tentative_g_score = gscore[current] + heuristic(current, neighbor)
+            
+            if neighbor not in array:
+                continue
+
+            # Make sure walkable terrain
+            if i == 2 and ((current[0]+1,current[1]) in walls):
+                continue
+            if i == -2 and ((current[0]-1,current[1]) in walls):
+                continue
+            if j == 2 and ((current[0],current[1]+1) in walls):
+                continue
+            if j == -2 and ((current[0],current[1]-1) in walls):
+                continue
+
+                
+            if neighbor in close_set and tentative_g_score >= gscore.get(neighbor, 0):
                 continue
                 
-            if neighbor in close_set and tentative_g_score >= g.get(neighbor, 0):
-                continue
-                
-            if  tentative_g_score < g.get(neighbor, 0) or neighbor not in [i[1]for i in oheap]:
+            if  tentative_g_score < gscore.get(neighbor, 0) or neighbor not in [i[1]for i in oheap]:
                 came_from[neighbor] = current
-                g[neighbor] = tentative_g_score
-                f[neighbor] = tentative_g_score + heuristic(neighbor, goal)
-                heappush(oheap, (f[neighbor], neighbor))
+                gscore[neighbor] = tentative_g_score
+                fscore[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                heappush(oheap, (fscore[neighbor], neighbor))
            
     return None
+
+
+# arr =  [(2, 0), (2, 2), (4, 2), (0, 2), (-2, 2), (-4, 2)]
+# walls = [(0, 1), (1, 2), (3, 2), (-2, 1), (-2, 3), (2, -1), (5, 2), (2, 1), (-4, 3), (-5, 2), (2, 3), (-4, 1), (4, 3), (0, -1), (0, 3), (4, 1)]
+# start = -4,2
+# goal = 0,2
+# print(astar(start,goal,arr,walls))
