@@ -276,70 +276,14 @@ class MyRob(CRobLinkAngs):
                         chave = (x,y)
                         self.beacons_xy.append(chave)
                     
-                    for a in self.beacons_xy:
-                        self.path.extend(astar(key,a,visited,self.walls_spotted))
-                    self.finish = True
-                if len(self.path) != 0:
-                    print("path",self.path)
-                    next = self.path[len(self.path)-1]
-                    print("nexttttt:",next)
-                    sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
-                    sentidoY = self.y_for_mapping - next[1]    # +baixo - cima
-
-                    lastx = next[0]
-                    lasty = next[1]
-
-                    if sentidoX == 0:
-                        if sentidoY > 0:
-                            if self.rotateDown():
-                                value = ""
-                                value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
-                                self.visited_cells[key] = value
-                                self.positionInitY = self.positionInitY - sentidoY
-                                self.y_for_mapping = self.y_for_mapping - 2
-                                self.came_from = "down"
-                                self.path.remove((lastx,lasty))
-                                self.moveY()
-                            else:
-                                self.rotateDown()
-                        if sentidoY < 0:
-                            if self.rotateUp():
-                                value = ""
-                                value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
-                                self.visited_cells[key] = value
-                                self.positionInitY = self.positionInitY - sentidoY
-                                self.y_for_mapping = self.y_for_mapping + 2
-                                self.came_from = "up"
-                                self.path.remove((lastx,lasty))
-                                self.moveY()
-                            else:
-                                self.rotateUp()
-                    if sentidoY == 0:
-                        if sentidoX > 0:
-                            if self.rotateLeft():
-                                print("noelieaaaaaaaaaaaaaaaaaaaaa")
-                                value = ""
-                                value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
-                                self.visited_cells[key] = value
-                                self.positionInitX = self.positionInitX - sentidoX
-                                self.x_for_mapping = self.x_for_mapping - 2
-                                self.came_from = "left"
-                                self.path.remove((lastx,lasty))
-                                self.moveX()
-                            else:
-                                self.rotateLeft()
-                        if sentidoX < 0:
-                            if self.rotateRight():
-                                value = ""
-                                value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
-                                self.visited_cells[key] = value
-                                self.positionInitX = self.positionInitX - sentidoX
-                                self.x_for_mapping = self.x_for_mapping + 2
-                                self.came_from = "right"
-                                self.path.remove((lastx,lasty))
-                                self.moveX()
-                            else:
-                                self.rotateRight()
+                    self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
+                    self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
+                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
+                    print(self.path)
+                    # for a in self.beacons_xy:
+                    #     self.path.extend(astar(key,a,visited,self.walls_spotted))
+                    # print(self.path)
+                    quit()
             else:
                 if espace == 1:
                     if walls[0] == 0:
