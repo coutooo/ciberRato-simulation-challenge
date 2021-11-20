@@ -283,6 +283,8 @@ class MyRob(CRobLinkAngs):
                     # for a in self.beacons_xy:
                     #     self.path.extend(astar(key,a,visited,self.walls_spotted))
                     # print(self.path)
+                    self.planning_output()
+
                     quit()
             else:
                 if espace == 1:
@@ -600,16 +602,26 @@ class MyRob(CRobLinkAngs):
             self.mapping[key] = str(symbol)
 
     def mapping_output(self):
-        f = open("mapping.out",'w')
-        for x in range(1,27):
-            for y in range(1,55):
+        f = open("mapping_C3.out",'w')
+        for x in range(1,28):
+            for y in range(1,56):
                 if(y,x) in self.mapping:
                     f.write(self.mapping.get((y,x)))
                 else:
                     f.write(' ')
             f.write('\n')
         f.close()
-
+    
+    def planning_output(self):
+        f = open("planning.out",'w')
+        for item in self.path:
+            string = str(item)
+            string = string.replace('(','')
+            string= string.replace(')','')
+            string=  string.replace(',','')
+            f.write(string+ "\n")
+        f.write("0 0")
+        f.close()
     # def write_mapaC2(self):
     #     file = 'test.txt'
     #     np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')

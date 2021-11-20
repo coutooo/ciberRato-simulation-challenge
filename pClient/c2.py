@@ -572,8 +572,8 @@ class MyRob(CRobLinkAngs):
 
     def mapping_output(self):
         f = open("mapping.out",'w')
-        for x in range(1,27):
-            for y in range(1,55):
+        for x in range(1,28):
+            for y in range(1,56):
                 if(y,x) in self.mapping:
                     f.write(self.mapping.get((y,x)))
                 else:
