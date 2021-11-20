@@ -21,6 +21,7 @@ class MyRob(CRobLinkAngs):
     walls_spotted = set()
     last_cells = []
     beacons_cells = {}
+    path = []
 
     #mapaC2 = np.zeros(shape=(27,55))
 
@@ -110,10 +111,10 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
 
         print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
-        print("visited:",self.visited_cells)
         print("atual",(self.x_for_mapping,self.y_for_mapping))
-        print("last",self.last_cells) 
-        print("walls",self.walls_spotted)  
+        print("x:",self.measures.x,"y:",self.measures.y)
+        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
+        print("path:",self.path)
 
 
         # print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
@@ -123,8 +124,6 @@ class MyRob(CRobLinkAngs):
             if self.measures.ground not in self.beacons_cells.values():
                 self.beacons_cells[(self.x_for_mapping,self.y_for_mapping)] = self.measures.ground
 
-        print("beacons:",self.beacons_cells)
-
         # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
         if not self.moving:
             key = (self.x_for_mapping,self.y_for_mapping)       # atual
@@ -133,21 +132,13 @@ class MyRob(CRobLinkAngs):
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda key3
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo key4
             if key in self.visited_cells:
-                if self.visited_cells.get(key) == "cccc":
-                    if len(self.last_cells) == 0:
-                        print("Ja acabou jessica")
-                        quit()  
-                    sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
-                    sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
-                    lastx = self.x_for_mapping
-                    lasty = self.y_for_mapping
+                if self.visited_cells.get(key) == "cccc" and len(self.path) == 0:
                     visited = []
                     wallis = set()
                     for x,y in self.walls_spotted:
                         chave = (x,y)
                         wallis.add(chave)
 
-                    print("aquiiii:",self.visited_cells.items())
                     for x,y in self.visited_cells:
                          chave = (x,y)
                          visited.append(chave)
@@ -155,15 +146,21 @@ class MyRob(CRobLinkAngs):
                              for letra in word:
                                  if letra == "o":
                                      last_avaliable = chave
-                    print("touuuuuuuuu",(key)) 
-                    print("goalllllllllll",last_avaliable)
-                    print("visiteddddd",visited)
-                    print("wallllssssss",wallis)
-                    estrela = astar(key,last_avaliable,visited,self.walls_spotted)
-                    print("------------------------------------astar>",estrela)
+                    self.path = astar(key,last_avaliable,visited,self.walls_spotted)
+                if self.visited_cells.get(key) == "cccc" and len(self.path) != 0:
+                    if len(self.last_cells) == 0:
+                        print("Ja acabou jessica")
+                        quit()  
+                    # sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
+                    # sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
+                    
 
+                    next = self.path[len(self.path)-1]
+                    sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
+                    sentidoY = self.y_for_mapping - next[1]    # +baixo - cima
 
-
+                    lastx = next[0]
+                    lasty = next[1]
 
                     if sentidoX == 0:
                         if sentidoY > 0:
@@ -171,9 +168,10 @@ class MyRob(CRobLinkAngs):
                                 value = ""
                                 value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
                                 self.visited_cells[key] = value
-                                self.positionInitY = self.positionInitY - 2
+                                self.positionInitY = self.positionInitY - sentidoY
                                 self.y_for_mapping = self.y_for_mapping - 2
                                 self.came_from = "down"
+                                self.path.remove((lastx,lasty))
                                 self.moveY()
                             else:
                                 self.rotateDown()
@@ -182,9 +180,10 @@ class MyRob(CRobLinkAngs):
                                 value = ""
                                 value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                                 self.visited_cells[key] = value
-                                self.positionInitY = self.positionInitY + 2
+                                self.positionInitY = self.positionInitY - sentidoY
                                 self.y_for_mapping = self.y_for_mapping + 2
                                 self.came_from = "up"
+                                self.path.remove((lastx,lasty))
                                 self.moveY()
                             else:
                                 self.rotateUp()
@@ -194,9 +193,10 @@ class MyRob(CRobLinkAngs):
                                 value = ""
                                 value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
                                 self.visited_cells[key] = value
-                                self.positionInitX = self.positionInitX - 2
+                                self.positionInitX = self.positionInitX - sentidoX
                                 self.x_for_mapping = self.x_for_mapping - 2
                                 self.came_from = "left"
+                                self.path.remove((lastx,lasty))
                                 self.moveX()
                             else:
                                 self.rotateLeft()
@@ -205,15 +205,16 @@ class MyRob(CRobLinkAngs):
                                 value = ""
                                 value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                                 self.visited_cells[key] = value
-                                self.positionInitX = self.positionInitX + 2
+                                self.positionInitX = self.positionInitX - sentidoX
                                 self.x_for_mapping = self.x_for_mapping + 2
                                 self.came_from = "right"
+                                self.path.remove((lastx,lasty))
                                 self.moveX()
                             else:
                                 self.rotateRight()
-                    if (lastx,lasty) in self.last_cells:
-                        self.last_cells.remove((lastx,lasty))
-                        print("removiii:",lastx,lasty)
+                    # if (lastx,lasty) in self.last_cells:
+                    #     self.last_cells.remove((lastx,lasty))
+                    #     print("removiii:",lastx,lasty)
 
                 elif self.visited_cells.get(key)[0] == 'o':
                         if self.rotateUp():

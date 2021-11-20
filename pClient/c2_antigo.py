@@ -110,10 +110,9 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
 
         print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        print("visited:",self.visited_cells)
         print("atual",(self.x_for_mapping,self.y_for_mapping))
-        print("x:",self.measures.x,"y:",self.measures.y)
-        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
-        print("path:",self.path)
+        print("last",self.last_cells)   
 
         # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
         if not self.moving:
@@ -129,7 +128,7 @@ class MyRob(CRobLinkAngs):
                     for x,y in self.walls_spotted:
                         chave = (x,y)
                         wallis.add(chave)
-                    last_avaliable = []
+
                     for x,y in self.visited_cells:
                          chave = (x,y)
                          visited.append(chave)
@@ -137,9 +136,6 @@ class MyRob(CRobLinkAngs):
                              for letra in word:
                                  if letra == "o":
                                      last_avaliable = chave
-                    if last_avaliable == []:
-                        print("Ja acabou jessica")
-                        quit() 
                     self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if self.visited_cells.get(key) == "cccc" and len(self.path) != 0:
                     if len(self.last_cells) == 0:
@@ -206,6 +202,72 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
+                    # if len(self.last_cells) == 0:
+                    #     print("Ja acabou jessica")
+                    #     quit()  
+                    # sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
+                    # sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
+                    # lastx = self.x_for_mapping
+                    # lasty = self.y_for_mapping
+
+                    # # for x,y in self.visited_cells:
+                    # #     chave = (x,y)
+                    # #     for word in self.visited_cells.get(chave):
+                    # #         for letra in word:
+                    # #             if letra == "o":
+                    # #                 last_avaliable = chave
+                    # # estrela = astar((self.last_cells[len(self.last_cells)-1]),last_avaliable,self.visited_cells,self.walls_spotted)
+                    # # print("------------------------------------astar>",estrela)
+
+
+
+
+                    # if sentidoX == 0:
+                    #     if sentidoY > 0:
+                    #         if self.rotateDown():
+                    #             value = ""
+                    #             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
+                    #             self.visited_cells[key] = value
+                    #             self.positionInitY = self.positionInitY - 2
+                    #             self.y_for_mapping = self.y_for_mapping - 2
+                    #             self.came_from = "down"
+                    #             self.moveY()
+                    #         else:
+                    #             self.rotateDown()
+                    #     if sentidoY < 0:
+                    #         if self.rotateUp():
+                    #             value = ""
+                    #             value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                    #             self.visited_cells[key] = value
+                    #             self.positionInitY = self.positionInitY + 2
+                    #             self.y_for_mapping = self.y_for_mapping + 2
+                    #             self.came_from = "up"
+                    #             self.moveY()
+                    #         else:
+                    #             self.rotateUp()
+                    # if sentidoY == 0:
+                    #     if sentidoX > 0:
+                    #         if self.rotateLeft():
+                    #             value = ""
+                    #             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
+                    #             self.visited_cells[key] = value
+                    #             self.positionInitX = self.positionInitX - 2
+                    #             self.x_for_mapping = self.x_for_mapping - 2
+                    #             self.came_from = "left"
+                    #             self.moveX()
+                    #         else:
+                    #             self.rotateLeft()
+                    #     if sentidoX < 0:
+                    #         if self.rotateRight():
+                    #             value = ""
+                    #             value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                    #             self.visited_cells[key] = value
+                    #             self.positionInitX = self.positionInitX + 2
+                    #             self.x_for_mapping = self.x_for_mapping + 2
+                    #             self.came_from = "right"
+                    #             self.moveX()
+                    #         else:
+                    #             self.rotateRight()
                     # if (lastx,lasty) in self.last_cells:
                     #     self.last_cells.remove((lastx,lasty))
                     #     print("removiii:",lastx,lasty)
@@ -391,22 +453,18 @@ class MyRob(CRobLinkAngs):
 
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
-                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
-                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
-                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
-                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
             self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
@@ -444,22 +502,18 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
-                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
-                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
-                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
-                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
             self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
@@ -478,84 +532,100 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > -10.0 and self.measures.compass < 10:
             if  self.measures.irSensor[center_id] > 1.00:
                 positions[1]= 1
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 positions[1] = 0
 
             if  self.measures.irSensor[left_id] > 1.00:
                 positions[0]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 positions[0] = 0
 
             if  self.measures.irSensor[right_id] > 1.00:
                 positions[3]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 positions[3] = 0
 
             if  self.measures.irSensor[back_id] > 1.00:
                 positions[2]= 1
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 positions[2] = 0
 
         elif self.measures.compass > 80.0 and self.measures.compass < 100.0:
             if  self.measures.irSensor[center_id] > 1.00:
                 positions[0]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 positions[0] = 0
 
             if  self.measures.irSensor[left_id] > 1.00:
                 positions[2]= 1
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 positions[2] = 0
 
             if  self.measures.irSensor[right_id] > 1.00:
                 positions[1]= 1
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 positions[1] = 0
 
             if  self.measures.irSensor[back_id] > 1.00:
                 positions[3]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 positions[3] = 0
         
         elif self.measures.compass > 170.0 or self.measures.compass < -170.0:
             if  self.measures.irSensor[center_id] > 1.00:
                 positions[2]= 1
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 positions[2] = 0
 
             if  self.measures.irSensor[left_id] > 1.00:
                 positions[3]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 positions[3] = 0
 
             if  self.measures.irSensor[right_id] > 1.00:
                 positions[0]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 positions[0] = 0
 
             if  self.measures.irSensor[back_id] > 1.00:
                 positions[1]= 1
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 positions[1] = 0
             
         elif self.measures.compass < -80 and self.measures.compass > -100:
             if  self.measures.irSensor[center_id] > 1.00:
                 positions[3]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 positions[3] = 0
 
             if  self.measures.irSensor[left_id] > 1.00:
                 positions[1]= 1
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
             else:
                 positions[1] = 0
 
             if  self.measures.irSensor[right_id] > 1.00:
                 positions[2]= 1
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
             else:
                 positions[2] = 0
 
             if  self.measures.irSensor[back_id] > 1.00:
                 positions[0]= 1
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
             else:
                 positions[0] = 0
             
