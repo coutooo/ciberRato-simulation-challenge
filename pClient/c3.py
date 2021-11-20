@@ -146,8 +146,10 @@ class MyRob(CRobLinkAngs):
                              for letra in word:
                                  if letra == "o":
                                      last_avaliable = chave
+                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                    print("key:",key,"goal:",last_avaliable)
                     self.path = astar(key,last_avaliable,visited,self.walls_spotted)
-                if self.visited_cells.get(key) == "cccc" and len(self.path) != 0:
+                if len(self.path) != 0:
                     if len(self.last_cells) == 0:
                         print("Ja acabou jessica")
                         quit()  
