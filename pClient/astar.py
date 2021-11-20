@@ -3,7 +3,7 @@ from heapq import *
 def heuristic(a, b):
     return (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) *(b[1] - a[1])
 
-def astar(start, goal,array,walls):
+def astar(start, goal,visited,walls):
 
     neighbors = [(0,2),(0,-2),(2,0),(-2,0)]
 
@@ -28,11 +28,11 @@ def astar(start, goal,array,walls):
             return data
 
         close_set.add(current)
-        for i, j in neighbors:
-            neighbor = current[0] + i, current[1] + j            
+        for i, k in neighbors:
+            neighbor = current[0] + i, current[1] + k            
             tentative_g_score = gscore[current] + heuristic(current, neighbor)
             
-            if neighbor not in array:
+            if neighbor not in visited:
                 continue
 
             # Make sure walkable terrain
@@ -40,9 +40,9 @@ def astar(start, goal,array,walls):
                 continue
             if i == -2 and ((current[0]-1,current[1]) in walls):
                 continue
-            if j == 2 and ((current[0],current[1]+1) in walls):
+            if k == 2 and ((current[0],current[1]+1) in walls):
                 continue
-            if j == -2 and ((current[0],current[1]-1) in walls):
+            if k == -2 and ((current[0],current[1]-1) in walls):
                 continue
 
                 
