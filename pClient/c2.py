@@ -124,11 +124,24 @@ class MyRob(CRobLinkAngs):
                 if self.visited_cells.get(key) == "cccc":
                     if len(self.last_cells) == 0:
                         print("Ja acabou jessica")
-                        quit()
+                        quit()  
                     sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
                     sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
                     lastx = self.x_for_mapping
                     lasty = self.y_for_mapping
+
+                    # for x,y in self.visited_cells:
+                    #     chave = (x,y)
+                    #     for word in self.visited_cells.get(chave):
+                    #         for letra in word:
+                    #             if letra == "o":
+                    #                 last_avaliable = chave
+                    # estrela = astar((self.last_cells[len(self.last_cells)-1]),last_avaliable,self.visited_cells,self.walls_spotted)
+                    # print("------------------------------------astar>",estrela)
+
+
+
+
                     if sentidoX == 0:
                         if sentidoY > 0:
                             if self.rotateDown():
@@ -273,39 +286,6 @@ class MyRob(CRobLinkAngs):
                             self.moveY()
                         else:
                             self.rotateDown()
-                # elif espace > 1:    # falta programar aqui para baixo estas opcoes
-                #             #cima key1 | direita key2 | esquerda key3 | baixo key4
-                #     if walls[0] == 0 and key1 not in self.last_cells:
-                #         if self.rotateUp():
-                #             if key not in self.last_cells:
-                #                 self.last_cells.append(key)
-                #             self.positionInitY = self.positionInitY + 2
-                #             self.y_for_mapping = self.y_for_mapping + 2
-                #             self.came_from = "up"
-                #             self.moveY()
-                #         else:
-                #             self.rotateUp()
-                #     elif walls[0] == 1 and walls[1] == 0 and key2 not in self.last_cells:
-                #         if self.rotateRight():
-                #             if key not in self.last_cells:
-                #                 self.last_cells.append(key)
-                #             self.positionInitX = self.positionInitX + 2
-                #             self.x_for_mapping = self.x_for_mapping + 2
-                #             self.came_from = "right"
-                #             self.moveX()
-                #         else:
-                #             self.rotateRight()
-                #     elif walls[0] == 1 and walls[1] == 1 and walls[2] == 0 and key3 not in self.last_cells:
-                #         if self.rotateLeft():
-                #             if key not in self.last_cells:
-                #                 self.last_cells.append(key)
-                #             self.positionInitX = self.positionInitX - 2
-                #             self.x_for_mapping = self.x_for_mapping - 2
-                #             self.came_from = "left"
-                #             self.moveX()
-                #         else:
-                #             self.rotateLeft()
-                #     #elif walls[0] == 1 and walls[1] == 1 and walls[2] ==
         else:
             # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
             print("esperar q anda")

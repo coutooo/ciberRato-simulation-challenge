@@ -28,7 +28,6 @@ def astar(start, goal,array,walls):
             return data
 
         close_set.add(current)
-        print("neighbors:",neighbors)
         for i, j in neighbors:
             neighbor = current[0] + i, current[1] + j            
             tentative_g_score = gscore[current] + heuristic(current, neighbor)

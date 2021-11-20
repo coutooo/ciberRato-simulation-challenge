@@ -68,29 +68,7 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        # quanto mais o valor mais perto esta
-        #  print('Rotate Right')
-        #    self.driveMotors(+0.06,-0.06)
-        # andar em frente             self.driveMotors(0.1,0.1)
-        #  ROBOT NO MEIO 2,17
-        # if    self.measures.irSensor[center_id] > 1.5\
-        #    and self.measures.irSensor[left_id]   > 3.0:
-        #     print('Rotate Right')
-        #     self.driveMotors(+0.05,-0.05)
-
-            # no lo creo
-        # if  abs(self.measures.irSensor[right_id] - self.measures.irSensor[left_id]) > 0.06:
-        #     print(abs(self.measures.irSensor[right_id] - self.measures.irSensor[left_id]))
-        #     if self.measures.irSensor[center_id] > 1 \
-        #     and self.measures.irSensor[right_id]   > self.measures.irSensor[left_id]:
-        #         print('Rotate Left')
-        #         self.driveMotors(-0.10,+0.15)
-        #     elif  self.measures.irSensor[center_id] > 1 \
-        #     and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
-        #         print('Rotate Right')
-        #         self.driveMotors(+0.15,-0.10)
-
-        # tou a usar este
+        
         if  self.measures.irSensor[right_id]   > 4:
             print('Rotate slightly Left')
             self.driveMotors(-0.05,+0.15)
@@ -106,45 +84,10 @@ class MyRob(CRobLinkAngs):
         elif  self.measures.irSensor[center_id] > 1 \
            and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
             print('Rotate Right')
-            self.driveMotors(+0.15,-0.10)
-
-        # elif  self.measures.irSensor[center_id] > 1.5\
-        #    and self.measures.irSensor[right_id]   > 3.0:
-        #     print('Rotate Left')
-        #     self.driveMotors(-0.05,+0.05)
-        # elif  self.measures.irSensor[center_id] > 1.5\
-        #    and self.measures.irSensor[right_id]   > 3.0:
-        #     print('Rotate Left')
-        #     self.driveMotors(-0.05,+0.05) 
-        # elif self.measures.irSensor[right_id] > 3.0:
-        #     print('Rotate Left')
-        #     self.driveMotors(-0.05,+0.05) 
-        # elif self.measures.irSensor[left_id] > 3.0:
-        #     print('Rotate Right')
-        #     self.driveMotors(+0.05,-0.05)    
-        # elif self.measures.irSensor[center_id] > 3.0:
-        #     print('Rotate Left')
-        #     self.driveMotors(-0.05,+0.05)   
-        
+            self.driveMotors(+0.15,-0.10)  
         else:
             print('Go')
-            self.driveMotors(0.15,0.15)
-        # if    self.measures.irSensor[center_id] > 6.0\
-        #    or self.measures.irSensor[left_id]   > 6.0\
-        #    or self.measures.irSensor[right_id]  > 6.0\
-        #    or self.measures.irSensor[back_id]   > 6.0:
-        #     print('Rotate Left')
-        #     self.driveMotors(-0.1,+0.1)
-        # elif self.measures.irSensor[left_id]> 4.0:
-        #     print('Rotate slowly left')
-        #     self.driveMotors(0.00,0.01)
-        # elif self.measures.irSensor[right_id]> 4.0:
-        #     print('Rotate slowly right')
-        #     self.driveMotors(0.01,0.00)
-        # else:
-        #     print('Go')
-        #     self.driveMotors(0.1,0.1)
-            
+            self.driveMotors(0.15,0.15)            
 
 class Map():
     def __init__(self, filename):
