@@ -142,13 +142,6 @@ class MyRob(CRobLinkAngs):
                         quit() 
                     self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if len(self.path) != 0:
-                    if len(self.last_cells) == 0:
-                        print("Ja acabou jessica")
-                        quit()  
-                    # sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
-                    # sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
-                    
-
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
                     sentidoY = self.y_for_mapping - next[1]    # +baixo - cima

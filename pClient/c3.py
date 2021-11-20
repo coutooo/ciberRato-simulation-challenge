@@ -22,6 +22,8 @@ class MyRob(CRobLinkAngs):
     last_cells = []
     beacons_cells = {}
     path = []
+    finish = False
+    beacons_xy= []
 
     #mapaC2 = np.zeros(shape=(27,55))
 
@@ -115,10 +117,11 @@ class MyRob(CRobLinkAngs):
         print("x:",self.measures.x,"y:",self.measures.y)
         print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         print("path:",self.path)
+        print("beacons:",self.beacons_cells)
 
 
-        # print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
-        # print("GROINDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
+        print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
+        print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
         
         if self.measures.ground > -1:
             if self.measures.ground not in self.beacons_cells.values():
@@ -131,14 +134,14 @@ class MyRob(CRobLinkAngs):
             key2 = ((self.x_for_mapping+2),self.y_for_mapping)  # direita key 2
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda key3
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo key4
-            if key in self.visited_cells:
+            if key in self.visited_cells and self.finish==False:
                 if self.visited_cells.get(key) == "cccc" and len(self.path) == 0:
                     visited = []
                     wallis = set()
                     for x,y in self.walls_spotted:
                         chave = (x,y)
                         wallis.add(chave)
-
+                    last_avaliable = []
                     for x,y in self.visited_cells:
                          chave = (x,y)
                          visited.append(chave)
@@ -146,17 +149,12 @@ class MyRob(CRobLinkAngs):
                              for letra in word:
                                  if letra == "o":
                                      last_avaliable = chave
-                    print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                    if last_avaliable == []:
+                        self.finish = True
                     print("key:",key,"goal:",last_avaliable)
-                    self.path = astar(key,last_avaliable,visited,self.walls_spotted)
+                    if last_avaliable != []:
+                        self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if len(self.path) != 0:
-                    if len(self.last_cells) == 0:
-                        print("Ja acabou jessica")
-                        quit()  
-                    # sentidoX = self.x_for_mapping - self.last_cells[len(self.last_cells)-1][0]    # + esquerda - direita
-                    # sentidoY = self.y_for_mapping - self.last_cells[len(self.last_cells)-1][1]    # + baixo - cima
-                    
-
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
                     sentidoY = self.y_for_mapping - next[1]    # +baixo - cima
@@ -214,9 +212,6 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
-                    # if (lastx,lasty) in self.last_cells:
-                    #     self.last_cells.remove((lastx,lasty))
-                    #     print("removiii:",lastx,lasty)
 
                 elif self.visited_cells.get(key)[0] == 'o':
                         if self.rotateUp():
@@ -270,6 +265,81 @@ class MyRob(CRobLinkAngs):
                             self.moveY()
                         else:
                             self.rotateDown()
+            elif key in self.visited_cells and self.finish == True:
+                if len(self.path) == 0:
+                    visited = []
+                    for x,y in self.visited_cells:
+                         chave = (x,y)
+                         visited.append(chave)
+                    start = (0,0)
+                    for x,y in self.beacons_cells:
+                        chave = (x,y)
+                        self.beacons_xy.append(chave)
+                    
+                    for a in self.beacons_xy:
+                        self.path.extend(astar(key,a,visited,self.walls_spotted))
+                    self.finish = True
+                if len(self.path) != 0:
+                    print("path",self.path)
+                    next = self.path[len(self.path)-1]
+                    print("nexttttt:",next)
+                    sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
+                    sentidoY = self.y_for_mapping - next[1]    # +baixo - cima
+
+                    lastx = next[0]
+                    lasty = next[1]
+
+                    if sentidoX == 0:
+                        if sentidoY > 0:
+                            if self.rotateDown():
+                                value = ""
+                                value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
+                                self.visited_cells[key] = value
+                                self.positionInitY = self.positionInitY - sentidoY
+                                self.y_for_mapping = self.y_for_mapping - 2
+                                self.came_from = "down"
+                                self.path.remove((lastx,lasty))
+                                self.moveY()
+                            else:
+                                self.rotateDown()
+                        if sentidoY < 0:
+                            if self.rotateUp():
+                                value = ""
+                                value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                                self.visited_cells[key] = value
+                                self.positionInitY = self.positionInitY - sentidoY
+                                self.y_for_mapping = self.y_for_mapping + 2
+                                self.came_from = "up"
+                                self.path.remove((lastx,lasty))
+                                self.moveY()
+                            else:
+                                self.rotateUp()
+                    if sentidoY == 0:
+                        if sentidoX > 0:
+                            if self.rotateLeft():
+                                print("noelieaaaaaaaaaaaaaaaaaaaaa")
+                                value = ""
+                                value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
+                                self.visited_cells[key] = value
+                                self.positionInitX = self.positionInitX - sentidoX
+                                self.x_for_mapping = self.x_for_mapping - 2
+                                self.came_from = "left"
+                                self.path.remove((lastx,lasty))
+                                self.moveX()
+                            else:
+                                self.rotateLeft()
+                        if sentidoX < 0:
+                            if self.rotateRight():
+                                value = ""
+                                value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
+                                self.visited_cells[key] = value
+                                self.positionInitX = self.positionInitX - sentidoX
+                                self.x_for_mapping = self.x_for_mapping + 2
+                                self.came_from = "right"
+                                self.path.remove((lastx,lasty))
+                                self.moveX()
+                            else:
+                                self.rotateRight()
             else:
                 if espace == 1:
                     if walls[0] == 0:
