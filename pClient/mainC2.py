@@ -572,7 +572,7 @@ class MyRob(CRobLinkAngs):
             self.mapping[key] = str(symbol)
 
     def mapping_output(self):
-        f = open("mapping.out",'w')
+        f = open(file,'w')
         for x in range(1,28):
             for y in range(1,56):
                 if(y,x) in self.mapping:
@@ -582,33 +582,6 @@ class MyRob(CRobLinkAngs):
             f.write('\n')
         f.close()
 
-    # def write_mapaC2(self):
-    #     file = 'test.txt'
-    #     np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')
-
-    #     fin = open(file, "rt")
-    #     #read file contents to string
-    #     data = fin.read()
-    #     # 'x' -> livre,
-    #     # '|' -> parede vertical, 
-    #     # '-' -> parede horizontal, 
-    #     # ' '-> desconhecido
-    #     # 1 -> 'x' 
-    #     # 2 -> '|' 
-    #     # 3 -> '-'
-    #     data = data.replace('0', ' ')
-    #     data = data.replace('1', 'x')
-    #     data = data.replace('2', '|')
-    #     data = data.replace('3', '-')
-
-    #     #close the input file
-    #     fin.close()
-    #     #open the input file in write mode
-    #     fin = open(file, "wt")
-    #     #overrite the input file with the resulting data
-    #     fin.write(data)
-    #     #close the file
-    #     fin.close()
 
 class Map():
     def __init__(self, filename):
@@ -642,6 +615,7 @@ rob_name = "pClient1"
 host = "localhost"
 pos = 1
 mapc = None
+file = "mapping.out"
 
 for i in range(1, len(sys.argv),2):
     if (sys.argv[i] == "--host" or sys.argv[i] == "-h") and i != len(sys.argv) - 1:
@@ -652,6 +626,8 @@ for i in range(1, len(sys.argv),2):
         rob_name = sys.argv[i + 1]
     elif (sys.argv[i] == "--map" or sys.argv[i] == "-m") and i != len(sys.argv) - 1:
         mapc = Map(sys.argv[i + 1])
+    elif (sys.argv[i] == "--file" or sys.argv[i] == "-f") and i != len(sys.argv) - 1:
+        file = sys.argv[i + 1]
     else:
         print("Unkown argument", sys.argv[i])
         quit()

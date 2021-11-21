@@ -1,5 +1,6 @@
 #import numpy as np
 import operator
+from os import times
 import sys
 from croblink import *
 from math import *
@@ -20,10 +21,7 @@ class MyRob(CRobLinkAngs):
     came_from = ""
     walls_spotted = set()
     last_cells = []
-    beacons_cells = {}
     path = []
-    finish = False
-    beacons_xy= []
 
     #mapaC2 = np.zeros(shape=(27,55))
 
@@ -117,15 +115,6 @@ class MyRob(CRobLinkAngs):
         print("x:",self.measures.x,"y:",self.measures.y)
         print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
-        print("beacons:",self.beacons_cells)
-
-
-        #print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
-        #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
-        
-        if self.measures.ground > -1:
-            if self.measures.ground not in self.beacons_cells.values():
-                self.beacons_cells[(self.x_for_mapping,self.y_for_mapping)] = self.measures.ground
 
         # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
         if not self.moving:
@@ -134,7 +123,7 @@ class MyRob(CRobLinkAngs):
             key2 = ((self.x_for_mapping+2),self.y_for_mapping)  # direita key 2
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda key3
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo key4
-            if key in self.visited_cells and self.finish==False:
+            if key in self.visited_cells:
                 if self.visited_cells.get(key) == "cccc" and len(self.path) == 0:
                     visited = []
                     wallis = set()
@@ -150,10 +139,9 @@ class MyRob(CRobLinkAngs):
                                  if letra == "o":
                                      last_avaliable = chave
                     if last_avaliable == []:
-                        self.finish = True
-                    print("key:",key,"goal:",last_avaliable)
-                    if last_avaliable != []:
-                        self.path = astar(key,last_avaliable,visited,self.walls_spotted)
+                        print("Acabou")
+                        quit() 
+                    self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if len(self.path) != 0:
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
@@ -212,6 +200,9 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
+                    # if (lastx,lasty) in self.last_cells:
+                    #     self.last_cells.remove((lastx,lasty))
+                    #     print("removiii:",lastx,lasty)
 
                 elif self.visited_cells.get(key)[0] == 'o':
                         if self.rotateUp():
@@ -265,27 +256,6 @@ class MyRob(CRobLinkAngs):
                             self.moveY()
                         else:
                             self.rotateDown()
-            elif key in self.visited_cells and self.finish == True:
-                if len(self.path) == 0:
-                    visited = []
-                    for x,y in self.visited_cells:
-                         chave = (x,y)
-                         visited.append(chave)
-                    start = (0,0)
-                    for x,y in self.beacons_cells:
-                        chave = (x,y)
-                        self.beacons_xy.append(chave)
-                    
-                    self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
-                    print(self.path)
-                    # for a in self.beacons_xy:
-                    #     self.path.extend(astar(key,a,visited,self.walls_spotted))
-                    # print(self.path)
-                    self.planning_output()
-
-                    quit()
             else:
                 if espace == 1:
                     if walls[0] == 0:
@@ -602,7 +572,7 @@ class MyRob(CRobLinkAngs):
             self.mapping[key] = str(symbol)
 
     def mapping_output(self):
-        f = open("mapping_C3.out",'w')
+        f = open(file,'w')
         for x in range(1,28):
             for y in range(1,56):
                 if(y,x) in self.mapping:
@@ -611,44 +581,7 @@ class MyRob(CRobLinkAngs):
                     f.write(' ')
             f.write('\n')
         f.close()
-    
-    def planning_output(self):
-        f = open("planning.out",'w')
-        for item in self.path:
-            string = str(item)
-            string = string.replace('(','')
-            string= string.replace(')','')
-            string=  string.replace(',','')
-            f.write(string+ "\n")
-        f.write("0 0")
-        f.close()
-    # def write_mapaC2(self):
-    #     file = 'test.txt'
-    #     np.savetxt(file,self.mapaC2.astype(int), fmt='%i',delimiter='')
 
-    #     fin = open(file, "rt")
-    #     #read file contents to string
-    #     data = fin.read()
-    #     # 'x' -> livre,
-    #     # '|' -> parede vertical, 
-    #     # '-' -> parede horizontal, 
-    #     # ' '-> desconhecido
-    #     # 1 -> 'x' 
-    #     # 2 -> '|' 
-    #     # 3 -> '-'
-    #     data = data.replace('0', ' ')
-    #     data = data.replace('1', 'x')
-    #     data = data.replace('2', '|')
-    #     data = data.replace('3', '-')
-
-    #     #close the input file
-    #     fin.close()
-    #     #open the input file in write mode
-    #     fin = open(file, "wt")
-    #     #overrite the input file with the resulting data
-    #     fin.write(data)
-    #     #close the file
-    #     fin.close()
 
 class Map():
     def __init__(self, filename):
@@ -682,6 +615,7 @@ rob_name = "pClient1"
 host = "localhost"
 pos = 1
 mapc = None
+file = "mapping.out"
 
 for i in range(1, len(sys.argv),2):
     if (sys.argv[i] == "--host" or sys.argv[i] == "-h") and i != len(sys.argv) - 1:
@@ -692,6 +626,8 @@ for i in range(1, len(sys.argv),2):
         rob_name = sys.argv[i + 1]
     elif (sys.argv[i] == "--map" or sys.argv[i] == "-m") and i != len(sys.argv) - 1:
         mapc = Map(sys.argv[i + 1])
+    elif (sys.argv[i] == "--file" or sys.argv[i] == "-f") and i != len(sys.argv) - 1:
+        file = sys.argv[i + 1]
     else:
         print("Unkown argument", sys.argv[i])
         quit()
