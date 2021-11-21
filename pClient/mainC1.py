@@ -70,23 +70,23 @@ class MyRob(CRobLinkAngs):
         back_id = 3
         
         if  self.measures.irSensor[right_id]   > 4:
-            print('Rotate slightly Left')
+            #print('Rotate slightly Left')
             self.driveMotors(-0.05,+0.15)
         elif self.measures.irSensor[left_id]   > 4:
-            print('Rotate slightly Right')
+            #print('Rotate slightly Right')
             self.driveMotors(+0.15,-0.05)
 
         elif  self.measures.irSensor[center_id] > 1 \
            and self.measures.irSensor[right_id]   > self.measures.irSensor[left_id]:
-            print('Rotate Left')
+            #print('Rotate Left')
             self.driveMotors(-0.10,+0.15)
             
         elif  self.measures.irSensor[center_id] > 1 \
            and self.measures.irSensor[left_id]   > self.measures.irSensor[right_id]:
-            print('Rotate Right')
+            #print('Rotate Right')
             self.driveMotors(+0.15,-0.10)  
         else:
-            print('Go')
+            #print('Go')
             self.driveMotors(0.15,0.15)            
 
 class Map():
