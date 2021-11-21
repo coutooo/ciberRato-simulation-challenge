@@ -112,16 +112,16 @@ class MyRob(CRobLinkAngs):
             if i == 0:
                 espace = espace+1
 
-        print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         print("atual",(self.x_for_mapping,self.y_for_mapping))
         print("x:",self.measures.x,"y:",self.measures.y)
         print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
-        print("path:",self.path)
+        #print("path:",self.path)
         print("beacons:",self.beacons_cells)
 
 
-        print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
-        print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
+        #print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
+        #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
         
         if self.measures.ground > -1:
             if self.measures.ground not in self.beacons_cells.values():
@@ -330,7 +330,7 @@ class MyRob(CRobLinkAngs):
                             self.rotateDown()
         else:
             # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
-            print("esperar q anda")
+            #print("esperar q anda")
             if (self.measures.compass > 80 and self.measures.compass < 100) or (self.measures.compass > -100 and self.measures.compass < -80):
                 self.moveY()
             else:
@@ -343,9 +343,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass < -95.0 or self.measures.compass > -85.0:
             print("rotate down")
             if self.measures.compass > -90 and self.measures.compass < 90:
-                self.driveMotors(+0.03,-0.03)
+                self.driveMotors(+0.15,-0.15)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
-                self.driveMotors(-0.03,+0.03)
+                self.driveMotors(-0.15,+0.15)
             return False
         else:
             return True
@@ -354,9 +354,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > -175 and self.measures.compass < 175.0:
             print("rotate left")
             if self.measures.compass <= 0:
-                self.driveMotors(+0.03,-0.03)
+                self.driveMotors(+0.15,-0.15)
             if self.measures.compass > 0:
-                self.driveMotors(-0.03,+0.03)
+                self.driveMotors(-0.15,+0.15)
             return False
         else:
             return True
@@ -365,9 +365,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > 95.0 or self.measures.compass < 85.0:
             print("rotate up")
             if self.measures.compass > -90 and self.measures.compass < 90:
-                self.driveMotors(-0.03,+0.03)
+                self.driveMotors(-0.15,+0.15)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
-                self.driveMotors(+0.03,-0.03)
+                self.driveMotors(+0.15,-0.15)
             return False
         else:
             return True
@@ -376,9 +376,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass < -5.0 or self.measures.compass > 5.0:
             print("rotate right")
             if self.measures.compass >= 0:
-                self.driveMotors(+0.03,-0.03)
+                self.driveMotors(+0.15,-0.15)
             if self.measures.compass < 0:
-                self.driveMotors(-0.03,+0.03)
+                self.driveMotors(-0.15,+0.15)
             return False
         else:
             return True
