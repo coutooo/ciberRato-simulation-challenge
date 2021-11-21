@@ -19,7 +19,6 @@ class MyRob(CRobLinkAngs):
     y_for_mapping = 0
     came_from = ""
     walls_spotted = set()
-    last_cells = []
     beacons_cells = {}
     path = []
     finish = False
@@ -113,11 +112,11 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
 
         #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
-        print("atual",(self.x_for_mapping,self.y_for_mapping))
-        print("x:",self.measures.x,"y:",self.measures.y)
-        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
+        # print("atual",(self.x_for_mapping,self.y_for_mapping))
+        # print("x:",self.measures.x,"y:",self.measures.y)
+        # print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
-        print("beacons:",self.beacons_cells)
+        #print("beacons:",self.beacons_cells)
 
 
         #print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
@@ -151,7 +150,7 @@ class MyRob(CRobLinkAngs):
                                      last_avaliable = chave
                     if last_avaliable == []:
                         self.finish = True
-                    print("key:",key,"goal:",last_avaliable)
+                    #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if len(self.path) != 0:
@@ -218,8 +217,6 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value +=  "c" +self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -231,8 +228,6 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0]+ "c" + self.visited_cells.get(key)[2] + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
@@ -244,8 +239,6 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
                             self.visited_cells[key] = value
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -257,8 +250,6 @@ class MyRob(CRobLinkAngs):
                             value = ""
                             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ self.visited_cells.get(key)[2]+ "c" 
                             self.visited_cells[key] = value
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
@@ -279,7 +270,7 @@ class MyRob(CRobLinkAngs):
                     self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
                     self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
                     self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
-                    print(self.path)
+                    #print(self.path)
                     # for a in self.beacons_xy:
                     #     self.path.extend(astar(key,a,visited,self.walls_spotted))
                     # print(self.path)
@@ -290,8 +281,6 @@ class MyRob(CRobLinkAngs):
                 if espace == 1:
                     if walls[0] == 0:
                         if self.rotateUp():
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -300,8 +289,6 @@ class MyRob(CRobLinkAngs):
                             self.rotateUp()
                     elif walls[1] == 0:
                         if self.rotateRight():
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
@@ -310,8 +297,6 @@ class MyRob(CRobLinkAngs):
                             self.rotateRight()
                     elif walls [2] == 0:
                         if self.rotateLeft():
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -320,8 +305,6 @@ class MyRob(CRobLinkAngs):
                             self.rotateLeft()
                     elif walls[3] == 0:
                         if self.rotateDown():
-                            if key not in self.last_cells:
-                                self.last_cells.append(key)
                             self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
@@ -341,7 +324,7 @@ class MyRob(CRobLinkAngs):
     def rotateDown(self):
         # -90 graus
         if self.measures.compass < -95.0 or self.measures.compass > -85.0:
-            print("rotate down")
+            #print("rotate down")
             if self.measures.compass > -90 and self.measures.compass < 90:
                 self.driveMotors(+0.15,-0.15)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
@@ -352,7 +335,7 @@ class MyRob(CRobLinkAngs):
     def rotateLeft(self):
         # 180 graus e -180
         if self.measures.compass > -175 and self.measures.compass < 175.0:
-            print("rotate left")
+            #print("rotate left")
             if self.measures.compass <= 0:
                 self.driveMotors(+0.15,-0.15)
             if self.measures.compass > 0:
@@ -363,7 +346,7 @@ class MyRob(CRobLinkAngs):
     def rotateUp(self):
         # 90 graus
         if self.measures.compass > 95.0 or self.measures.compass < 85.0:
-            print("rotate up")
+            #print("rotate up")
             if self.measures.compass > -90 and self.measures.compass < 90:
                 self.driveMotors(-0.15,+0.15)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
@@ -374,7 +357,7 @@ class MyRob(CRobLinkAngs):
     def rotateRight(self):
         # 0 graus
         if self.measures.compass < -5.0 or self.measures.compass > 5.0:
-            print("rotate right")
+            #print("rotate right")
             if self.measures.compass >= 0:
                 self.driveMotors(+0.15,-0.15)
             if self.measures.compass < 0:
@@ -414,26 +397,13 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
 
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     def moveY(self):
@@ -467,26 +437,13 @@ class MyRob(CRobLinkAngs):
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     # identificar paredes ----------------
@@ -596,21 +553,6 @@ class MyRob(CRobLinkAngs):
         left_wheel = linear + (rot/2)
 
         self.driveMotors(left_wheel,right_wheel)
-
-    def insert_mapping(self, key, symbol):
-        if key not in self.mapping or self.mapping.get(key) == 'X':
-            self.mapping[key] = str(symbol)
-
-    def mapping_output(self):
-        f = open("mapping_C3.out",'w')
-        for x in range(1,28):
-            for y in range(1,56):
-                if(y,x) in self.mapping:
-                    f.write(self.mapping.get((y,x)))
-                else:
-                    f.write(' ')
-            f.write('\n')
-        f.close()
     
     def planning_output(self):
         f = open(file,'w')
