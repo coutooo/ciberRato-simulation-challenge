@@ -1,7 +1,7 @@
 from heapq import *
 
 def heuristic(a, b):
-    return (b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) *(b[1] - a[1])
+    return abs(b[0] - a[0]) + abs(b[1] - a[1]) 
 
 def astar(start, goal,visited,walls):
 
