@@ -397,26 +397,13 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
 
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     def moveY(self):
@@ -450,26 +437,13 @@ class MyRob(CRobLinkAngs):
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
             if walls[0] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-            else:
-                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-            else:
-                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     # identificar paredes ----------------
@@ -579,21 +553,6 @@ class MyRob(CRobLinkAngs):
         left_wheel = linear + (rot/2)
 
         self.driveMotors(left_wheel,right_wheel)
-
-    def insert_mapping(self, key, symbol):
-        if key not in self.mapping or self.mapping.get(key) == 'X':
-            self.mapping[key] = str(symbol)
-
-    def mapping_output(self):
-        f = open("mapping_C3.out",'w')
-        for x in range(1,28):
-            for y in range(1,56):
-                if(y,x) in self.mapping:
-                    f.write(self.mapping.get((y,x)))
-                else:
-                    f.write(' ')
-            f.write('\n')
-        f.close()
     
     def planning_output(self):
         f = open(file,'w')
