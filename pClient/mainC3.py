@@ -21,7 +21,7 @@ class MyRob(CRobLinkAngs):
     walls_spotted = set()
     beacons_cells = {}
     path = []
-    finish = False
+    finish_m = False
     beacons_xy= []
 
     #mapaC2 = np.zeros(shape=(27,55))
@@ -50,7 +50,7 @@ class MyRob(CRobLinkAngs):
             self.readSensors()
 
             if self.measures.endLed:
-                print(self.rob_name + " exiting")
+                print(self.robName + " exiting")
                 quit()
 
             if state == 'stop' and self.measures.start:
@@ -133,7 +133,7 @@ class MyRob(CRobLinkAngs):
             key2 = ((self.x_for_mapping+2),self.y_for_mapping)  # direita key 2
             key3 = ((self.x_for_mapping-2),self.y_for_mapping)  # esquerda key3
             key4 = (self.x_for_mapping,(self.y_for_mapping-2))  # baixo key4
-            if key in self.visited_cells and self.finish==False:
+            if key in self.visited_cells and self.finish_m==False:
                 if self.visited_cells.get(key) == "cccc" and len(self.path) == 0:
                     visited = []
                     wallis = set()
@@ -149,7 +149,7 @@ class MyRob(CRobLinkAngs):
                                  if letra == "o":
                                      last_avaliable = chave
                     if last_avaliable == []:
-                        self.finish = True
+                        self.finish_m = True
                     #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
@@ -256,7 +256,7 @@ class MyRob(CRobLinkAngs):
                             self.moveY()
                         else:
                             self.rotateDown()
-            elif key in self.visited_cells and self.finish == True:
+            elif key in self.visited_cells and self.finish_m == True:
                 if len(self.path) == 0:
                     visited = []
                     for x,y in self.visited_cells:
@@ -276,6 +276,7 @@ class MyRob(CRobLinkAngs):
                     # print(self.path)
                     self.planning_output()
 
+                    self.finish()
                     quit()
             else:
                 if espace == 1:

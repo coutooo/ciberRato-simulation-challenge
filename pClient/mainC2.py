@@ -48,7 +48,7 @@ class MyRob(CRobLinkAngs):
             self.readSensors()
 
             if self.measures.endLed:
-                print(self.rob_name + " exiting")
+                print(self.robName + " exiting")
                 quit()
 
             if state == 'stop' and self.measures.start:
@@ -139,6 +139,7 @@ class MyRob(CRobLinkAngs):
                                      last_avaliable = chave
                     if last_avaliable == []:
                         print("Acabou")
+                        self.finish()
                         quit() 
                     self.path = astar(key,last_avaliable,visited,self.walls_spotted)
                 if len(self.path) != 0:
