@@ -18,12 +18,18 @@ class MyRob(CRobLinkAngs):
     mapping = {(28,14): 'I'} # 28,14 -> meio do mapa (27.5,13.5)
     x_for_mapping = 0
     y_for_mapping = 0
+    last_x = 0
+    last_y = 0
     came_from = ""
     walls_spotted = set()
     beacons_cells = {}
     path = []
     finish_m = False
     beacons_xy= []
+    currentwheels = (0,0)
+    lastwheels = (0,0)
+    left_wheel = 0
+    right_wheel = 0
 
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
@@ -111,12 +117,7 @@ class MyRob(CRobLinkAngs):
                 espace = espace+1
 
         #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
-        print("atual",(self.x_for_mapping,self.y_for_mapping))
-        # print("x:",self.measures.x,"y:",self.measures.y)
-        #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
-        #print("path:",self.path)
-        #print("beacons:",self.beacons_cells)
-
+        print("atual",(self.last_x,self.last_y))
 
         #print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
         #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
@@ -170,6 +171,7 @@ class MyRob(CRobLinkAngs):
                                 self.y_for_mapping = self.y_for_mapping - 2
                                 self.came_from = "down"
                                 self.path.remove((lastx,lasty))
+                                self.targetCalcul(self.last_x,self.last_y)
                                 self.moveY()
                             else:
                                 self.rotateDown()
@@ -182,6 +184,7 @@ class MyRob(CRobLinkAngs):
                                 self.y_for_mapping = self.y_for_mapping + 2
                                 self.came_from = "up"
                                 self.path.remove((lastx,lasty))
+                                self.targetCalcul(self.last_x,self.last_y)
                                 self.moveY()
                             else:
                                 self.rotateUp()
@@ -195,6 +198,7 @@ class MyRob(CRobLinkAngs):
                                 self.x_for_mapping = self.x_for_mapping - 2
                                 self.came_from = "left"
                                 self.path.remove((lastx,lasty))
+                                self.targetCalcul(self.last_x,self.last_y)
                                 self.moveX()
                             else:
                                 self.rotateLeft()
@@ -207,6 +211,7 @@ class MyRob(CRobLinkAngs):
                                 self.x_for_mapping = self.x_for_mapping + 2
                                 self.came_from = "right"
                                 self.path.remove((lastx,lasty))
+                                self.targetCalcul(self.last_x,self.last_y)
                                 self.moveX()
                             else:
                                 self.rotateRight()
@@ -219,6 +224,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveY()
                         else:
                             self.rotateUp()
@@ -230,6 +236,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveX()
                         else:
                             self.rotateRight()
@@ -241,6 +248,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveX()
                         else:
                             self.rotateLeft()
@@ -252,6 +260,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveY()
                         else:
                             self.rotateDown()
@@ -284,6 +293,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveY()
                         else:
                             self.rotateUp()
@@ -292,6 +302,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitX = self.positionInitX + 2
                             self.x_for_mapping = self.x_for_mapping + 2
                             self.came_from = "right"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveX()
                         else:
                             self.rotateRight()
@@ -300,6 +311,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveX()
                         else:
                             self.rotateLeft()
@@ -308,6 +320,7 @@ class MyRob(CRobLinkAngs):
                             #self.positionInitY = self.positionInitY - 2
                             self.y_for_mapping = self.y_for_mapping - 2
                             self.came_from = "down"
+                            self.targetCalcul(self.last_x,self.last_y)
                             self.moveY()
                         else:
                             self.rotateDown()
@@ -369,13 +382,13 @@ class MyRob(CRobLinkAngs):
 
     # andar -----------------
     def moveX(self):
-        if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) > 0.2):
+        if(abs(round(self.x_for_mapping,1)-round(self.last_x,1)) > 0.2):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
                 self.align(0.15,self.measures.compass,0.05,0)
             else:
                 self.align(0.15,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
             self.moving = True
-        if(abs(round(self.positionInitX,1)-round(self.measures.x,1)) < 0.2):
+        if(abs(round(self.x_for_mapping,1)-round(self.last_x,1)) < 0.2):
             self.driveMotors(0.00,0.00)
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -408,14 +421,14 @@ class MyRob(CRobLinkAngs):
 
     def moveY(self):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
-        if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) > 0.2):
+        if(abs(round(self.y_for_mapping,1)-round(self.last_y,1)) > 0.2):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
                 self.align(0.15,self.measures.compass,0.05,90)
             else:
                 self.align(0.15,self.measures.compass,0.05,-90)
 
             self.moving = True
-        if(abs(round(self.positionInitY,1)-round(self.measures.y,1)) < 0.2):
+        if(abs(round(self.y_for_mapping,1)-round(self.last_y,1)) < 0.2):
             self.driveMotors(0.00,0.00)
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -548,33 +561,42 @@ class MyRob(CRobLinkAngs):
     def align(self, linear, m, k, ref):
         rot = k * (m-ref)
 
-        right_wheel = linear - (rot/2)
-        left_wheel = linear + (rot/2)
+        self.right_wheel = linear - (rot/2)
+        self.left_wheel = linear + (rot/2)
 
-        self.driveMotors(left_wheel,right_wheel)
+        self.driveMotors(self.left_wheel,self.right_wheel)
 
 
     # x(t) = x(t−1) + lin ∗ cos(θ(t−1))
     # y(t) = y(t−1) + lin ∗ sin(θ(t−1))
-    def targetCalcul(self,orientation):
-        # lin = (left_wheel + right_wheel)/2
+    def targetCalcul(self, x,y):
 
-        # self.x_for_mapping = self.x_for_mapping + lin * cos(orientation)
-        # self.y_for_mapping = self.y_for_mapping + lin * sin(orientation)
-        if self.came_from == "right":
-            lin = (self.x_for_mapping+2 - self.x_for_mapping) / cos(orientation) 
-            wheel = (lin*2)/2
-        elif self.came_from == "left":
-            lin = (self.x_for_mapping-2 - self.x_for_mapping) / cos(orientation) 
-            wheel = (lin*2)/2
-        elif self.came_from == "up":
-            lin = (self.y_for_mapping - self.y_for_mapping) / sin(orientation) 
-            wheel = (lin*2)/2
-        elif self.came_from == "down":
-            lin = (self.y_for_mapping - self.y_for_mapping) / sin(orientation) 
-            wheel = (lin*2)/2
-        
-        return wheel
+        self.lastwheels = self.currentwheels
+        self.currentwheels = ( (self.left_wheel + self.lastwheels[0]) / 2 , (self.right_wheel + self.lastwheels[1]) / 2 )
+
+        if self.last_x == 0 and self.y_for_mapping == 0:
+            lin = (self.currentwheels[0]+self.currentwheels[1])/2 /2
+        else:
+            lin = (self.currentwheels[0]+self.currentwheels[1])/2
+
+
+        # ------------ corrigir bussola -----------
+        if -5 < self.measures.compass < 5:
+            bussola = 0
+        elif 85 < self.measures.compass< 95:
+            bussola = 90
+        elif -95 < self.measures.compass <-85:
+            bussola = -90
+        elif self.measures.compass <= -170 or self.measures.compass >= 170:  
+            bussola = 180 * self.measures.compass / abs(self.measures.compass)
+        #------------------------------------------
+
+        self.x_for_mapping = x + lin *cos(radians(bussola))
+        self.y_for_mapping = y + lin *sin(radians(bussola))
+
+        self.last_x = self.x_for_mapping
+        self.last_y = self.y_for_mapping    
+
     
     def planning_output(self):
         f = open(file,'w')
