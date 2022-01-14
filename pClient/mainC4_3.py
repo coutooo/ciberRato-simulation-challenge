@@ -10,6 +10,8 @@ CELLROWS=7
 CELLCOLS=14
 
 class MyRob(CRobLinkAngs):
+    tempx = 0
+    tempy = 0
     positionInitX = 0.0
     positionInitY = 0.0
     moving = False
@@ -61,6 +63,8 @@ class MyRob(CRobLinkAngs):
                 quit()
 
             if state == 'stop' and self.measures.start:
+                self.tempx = self.measures.x
+                self.tempy = self.measures.y
                 self.positionInitY = 0.0
                 self.positionInitX = 0.0
                 self.moving = False
@@ -125,6 +129,8 @@ class MyRob(CRobLinkAngs):
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
         print("fake gps:",self.fake_gps_x,self.fake_gps_y)
+        print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
+        print("center:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
         print("visited:",self.visited_cells)
         
 
@@ -136,7 +142,7 @@ class MyRob(CRobLinkAngs):
                 self.beacons_cells[(self.x_for_mapping,self.y_for_mapping)] = self.measures.ground
 
         # cima,direita,esquerda,baixo    1 -> parede 0 -> espace
-        if not self.moving and not self.correcting:
+        if not self.moving and self.correct_Pos():
             key = (self.x_for_mapping,self.y_for_mapping)       # atual
             key1 = (self.x_for_mapping,(self.y_for_mapping +2)) # cima key1 
             key2 = ((self.x_for_mapping+2),self.y_for_mapping)  # direita key 2
@@ -326,10 +332,14 @@ class MyRob(CRobLinkAngs):
         else:
             # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
             #print("esperar q anda")
-            if (self.measures.compass > 80 and self.measures.compass < 100) or (self.measures.compass > -100 and self.measures.compass < -80):
-                self.moveY()
+            #not self.moving and self.correct_Pos()
+            if self.moving:
+                if (self.measures.compass > 80 and self.measures.compass < 100) or (self.measures.compass > -100 and self.measures.compass < -80):
+                    self.moveY()
+                else:
+                    self.moveX()
             else:
-                self.moveX()
+                self.correct_Pos()
 
 
     # rodar ------------------
@@ -381,51 +391,48 @@ class MyRob(CRobLinkAngs):
 
     # andar -----------------
     def moveX(self):
-        if(abs(self.positionInitX-self.fake_gps_x) > 0.15):
+        if(abs(self.positionInitX-self.fake_gps_x) > 0.2):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
                 self.align(0.07,self.measures.compass,0.05,0)
             else:
                 self.align(0.07,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
             self.moving = True
-        if(abs(self.positionInitX-self.fake_gps_x) < 0.15):
+        if(abs(self.positionInitX-self.fake_gps_x) <= 0.2):
             self.driveMotors(0.00,0.00)
-            self.fake_gps_x = round(self.fake_gps_x)
-            self.fake_gps_y = round(self.fake_gps_y)
-            if self.correct_Pos():
-                walls = self.watch_walls()
-                key = (self.x_for_mapping,self.y_for_mapping)
-                espace = ""
-                for i in walls:
-                    if i == 0:
-                        espace += "o"           #o = open
-                    else:
-                        espace += "c"           #c = close
-                # cima,direita,esquerda,baixo
-                tmp = ""
-                if self.came_from == "left":
-                    tmp += espace[0] + "c" + espace[2] + espace[3]
-                elif self.came_from == "right":
-                    tmp += espace[0] + espace[1] + "c" + espace[3]
-                espace = tmp
-                if key not in self.visited_cells:
-                    self.visited_cells[key] = espace
+            self.fake_gps_x = self.positionInitX
+            walls = self.watch_walls()
+            key = (self.x_for_mapping,self.y_for_mapping)
+            espace = ""
+            for i in walls:
+                if i == 0:
+                    espace += "o"           #o = open
+                else:
+                    espace += "c"           #c = close
+            # cima,direita,esquerda,baixo
+            tmp = ""
+            if self.came_from == "left":
+                tmp += espace[0] + "c" + espace[2] + espace[3]
+            elif self.came_from == "right":
+                tmp += espace[0] + espace[1] + "c" + espace[3]
+            espace = tmp
+            if key not in self.visited_cells:
+                self.visited_cells[key] = espace
 
-                if walls[0] == 1:
-                    self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-                if walls[1] == 1:
-                    self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-                if walls[2] == 1:
-                    self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-                if walls[3] == 1:
-                    self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-                self.moving = False
-            else:
-                self.correct_Pos()
+            if walls[0] == 1:
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
+            if walls[1] == 1:
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
+            if walls[2] == 1:
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
+            if walls[3] == 1:
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
+            self.moving = False
+            
 
     def moveY(self):
         self.fake_gps(self.last_x,self.last_y)
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
-        if(abs(self.positionInitY-self.fake_gps_y) > 0.15):
+        if(abs(self.positionInitY-self.fake_gps_y) > 0.2):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
                 self.align(0.07,self.measures.compass,0.05,90)
             else:
@@ -433,40 +440,36 @@ class MyRob(CRobLinkAngs):
             #self.driveMotors(0.10,0.10)
 
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) < 0.15):
+        if(abs(self.positionInitY-self.fake_gps_y) <= 0.2):
             self.driveMotors(0.00,0.00)
-            self.fake_gps_x = round(self.fake_gps_x)
-            self.fake_gps_y = round(self.fake_gps_y)
-            if self.correct_Pos():
-                walls = self.watch_walls()
-                key = (self.x_for_mapping,self.y_for_mapping)
-                espace = "" 
-                for i in walls:
-                    if i == 0:
-                        espace += "o"           #o = open
-                    else:
-                        espace += "c"           #c = close
+            self.fake_gps_y = self.positionInitY
+            walls = self.watch_walls()
+            key = (self.x_for_mapping,self.y_for_mapping)
+            espace = "" 
+            for i in walls:
+                if i == 0:
+                    espace += "o"           #o = open
+                else:
+                    espace += "c"           #c = close
 
-                # cima,direita,esquerda,baixo
-                tmp = ""
-                if self.came_from == "up":
-                    tmp += espace[0] +espace[1] + espace[2] + "c"
-                elif self.came_from == "down":
-                    tmp += "c" + espace[1] + espace[2] + espace[3] 
-                espace = tmp
-                if key not in self.visited_cells:
-                    self.visited_cells[key] = espace
-                if walls[0] == 1:
-                    self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
-                if walls[1] == 1:
-                    self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
-                if walls[2] == 1:
-                    self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
-                if walls[3] == 1:
-                    self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
-                self.moving = False
-            else:
-                self.correct_Pos()
+            # cima,direita,esquerda,baixo
+            tmp = ""
+            if self.came_from == "up":
+                tmp += espace[0] +espace[1] + espace[2] + "c"
+            elif self.came_from == "down":
+                tmp += "c" + espace[1] + espace[2] + espace[3] 
+            espace = tmp
+            if key not in self.visited_cells:
+                self.visited_cells[key] = espace
+            if walls[0] == 1:
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
+            if walls[1] == 1:
+                self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
+            if walls[2] == 1:
+                self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
+            if walls[3] == 1:
+                self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
+            self.moving = False
 
     # -------- corrigir a posicao para o meio das celulas ---------------
     # 0.8 centro             2 de largura 0,2 parede     celula sem parede 2-0.4 = 1.6
@@ -475,187 +478,17 @@ class MyRob(CRobLinkAngs):
         left_id = 1
         right_id = 2
         back_id = 3
-        
-        print("aqui\n\n\naqui\n\nsamdsaikdsaodksakdasko\nCORRECTING\nCorrecting\ncorrecting\ncorrecting\ncorrecting")
-        print(self.came_from)
-        print("center:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
-        
-        # came from - para onde ta virado
 
-        self.correcting = True
+        walls = self.watch_walls()
+        # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
+        # walls  cima,direita,esquerda,baixo
 
-        if self.came_from == "right":
-            #direita
-            if self.measures.irSensor[center_id] > 2.5:
-                print("esquerda\nesquerda\nesquerda")
-                if self.rotateLeft():
-                    self.align(0.01,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
-                    return False
-                else:
-                    self.rotateLeft()
-                    return False
-            #cima
-            elif self.measures.irSensor[left_id] > 2.5:
-                print("baixo\nbaixo\nbaixo")
-                if self.rotateDown():
-                    self.align(0.01,self.measures.compass,0.05,-90)
-                    return False
-                else:
-                    self.rotateDown()
-                    return False
-            #baixo    
-            elif self.measures.irSensor[right_id] > 2.5:
-                print("cima\ncima\ncima")
-                if self.rotateUp():
-                    self.align(0.01,self.measures.compass,0.05,90)
-                    return False
-                else:
-                    self.rotateUp()
-                    return False
-            #esquerda
-            elif self.measures.irSensor[back_id] > 2.5:
-                print("direita\ndireita\ndireita")
-                if self.rotateRight():
-                    self.align(0.01,self.measures.compass,0.05,0)
-                    return False
-                else:
-                    self.rotateRight()
-                    return False
-            else:
-                if self.rotateRight():
-                    self.driveMotors(0.00,0.00)
-                    self.correcting = False
-                    return True
-                else:
-                    self.rotateRight()
-                    return False
-        if self.came_from == "left":
-            #left
-            if self.measures.irSensor[center_id] > 2.5:
-                if self.rotateRight():
-                    self.align(0.01,self.measures.compass,0.05,0)
-                    return False
-                else:
-                    self.rotateRight()
-                    return False
-            #baixo
-            elif self.measures.irSensor[left_id] > 2.5:
-                if self.rotateUp():
-                    self.align(0.01,self.measures.compass,0.05,90)
-                    return False
-                else:
-                    self.rotateUp()
-                    return False
-            #cima    
-            elif self.measures.irSensor[right_id] > 2.5:
-                if self.rotateDown():
-                    self.align(0.01,self.measures.compass,0.05,-90)
-                    return False
-                else:
-                    self.rotateDown()
-                    return False
-            #direita
-            elif self.measures.irSensor[back_id] > 2.5:
-                if self.rotateLeft():
-                    self.align(0.01,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
-                    return False
-                else:
-                    self.rotateLeft()
-                    return False
-            else:
-                if self.rotateLeft():
-                    self.driveMotors(0.00,0.00)
-                    self.correcting = False
-                    return True
-                else:
-                    self.rotateLeft()
-                    return False
         if self.came_from == "up":
-            #cima
-            if self.measures.irSensor[center_id] > 2.5:
-                print("baixo\nbaixo\nbaixo")
-                if self.rotateDown():
-                    self.align(0.01,self.measures.compass,0.05,-90)
-                    return False
-                else:
-                    self.rotateDown()
-                    return False
-            #esquerda
-            elif self.measures.irSensor[left_id] > 2.5:
-                print("direita\ndireita\ndireita")
-                if self.rotateRight():
-                    self.align(0.01,self.measures.compass,0.05,0)
-                    return False
-                else:
-                    self.rotateRight()
-                    return False
-            #direita    
-            elif self.measures.irSensor[right_id] > 2.5:
-                print("esquerda\nesquerda\nesquerda")
-                if self.rotateLeft():
-                    self.align(0.01,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
-                    return False
-                else:
-                    self.rotateLeft()
-                    return False
-            #baixo
-            elif self.measures.irSensor[back_id] > 2.5:
-                print("cima\ncima\ncima")
-                if self.rotateUp():
-                    self.align(0.01,self.measures.compass,0.05,90)
-                    return False
-                else:
-                    self.rotateUp()
-                    return False
-            else:
-                if self.rotateUp():
-                    self.driveMotors(0.00,0.00)
-                    self.correcting = False
-                    return True
-                else:
-                    self.rotateUp()
-                    return False
+            #explain contas com os calculos dos sensores 
         if self.came_from == "down":
-            #baixo
-            if self.measures.irSensor[center_id] > 2.5:
-                if self.rotateUp():
-                    self.align(0.01,self.measures.compass,0.05,90)
-                    return False
-                else:
-                    self.rotateUp()
-                    return False
-            #direita
-            elif self.measures.irSensor[left_id] > 2.5:
-                if self.rotateLeft():
-                    self.align(0.01,self.measures.compass,0.05,(180 * self.measures.compass / abs(self.measures.compass)))
-                    return False
-                else:
-                    self.rotateLeft()
-                    return False
-            #esquerda    
-            elif self.measures.irSensor[right_id] > 2.5:
-                if self.rotateRight():
-                    self.align(0.01,self.measures.compass,0.05,0)
-                    return False
-                else:
-                    self.rotateRight()
-                    return False
-            #cima
-            elif self.measures.irSensor[back_id] > 2.5:
-                if self.rotateDown():
-                    self.align(0.01,self.measures.compass,0.05,-90)
-                    return False
-                else:
-                    self.rotateDown()
-                    return False
-            else:
-                if self.rotateDown():
-                    self.driveMotors(0.00,0.00)
-                    self.correcting = False
-                    return True
-                else:
-                    self.rotateDown()
-                    return False
+        if self.came_from == "right":
+        if self.came_from == "left":
+
     # --------- new gps------
     def fake_gps(self, x,y):
         self.lastwheels = self.currentwheels
@@ -678,7 +511,6 @@ class MyRob(CRobLinkAngs):
         elif self.measures.compass <= -170 or self.measures.compass >= 170:  
             bussola = 180 * self.measures.compass / abs(self.measures.compass)
         #------------------------------------------
-
         self.fake_gps_x = x + lin *cos(radians(bussola))
         self.fake_gps_y = y + lin *sin(radians(bussola))
 
@@ -793,6 +625,9 @@ class MyRob(CRobLinkAngs):
         self.driveMotors(self.left_wheel,self.right_wheel)
         self.fake_gps(self.last_x,self.last_y)
     
+    def sensor_calculs(self, sensor):
+        return 1/self.measures.irSensor[sensor]
+
     def planning_output(self):
         f = open(file,'w')
         for item in self.path:
