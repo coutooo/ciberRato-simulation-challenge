@@ -267,13 +267,17 @@ class MyRob(CRobLinkAngs):
                         chave = (x,y)
                         self.beacons_xy.append(chave)
                     
-                    self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
+                    
+                    #self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
+                    #self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
+                    #self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
                     #print(self.path)
-                    # for a in self.beacons_xy:
-                    #     self.path.extend(astar(key,a,visited,self.walls_spotted))
-                    # print(self.path)
+                    i = 0
+                    for a in (0,(len(self.beacons_xy)-1)):
+                        self.path.extend(astar(self.beacons_xy[i+1],self.beacons_xy[i],visited,self.walls_spotted))
+                        i= i+1
+                    
+                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))                  
                     self.planning_output()
 
                     self.finish()
