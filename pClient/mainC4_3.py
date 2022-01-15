@@ -121,16 +121,16 @@ class MyRob(CRobLinkAngs):
             if i == 0:
                 espace = espace+1
 
-        print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
-        print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
+        #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        #print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
         # print("x:",self.measures.x,"y:",self.measures.y)
-        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
+        #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
-        print("fake gps:",self.fake_gps_x,self.fake_gps_y)
-        print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
-        print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
-        print("visited:",self.visited_cells)
+        #print("fake gps:",self.fake_gps_x,self.fake_gps_y)
+        #print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
+        #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
+        #print("visited:",self.visited_cells)
         #self.correct_Pos()
         
 
@@ -171,8 +171,8 @@ class MyRob(CRobLinkAngs):
                     #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
-                        print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-                        print("------------------",self.path)
+                        #print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+                        #print("------------------",self.path)
                 if len(self.path) != 0:
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
@@ -302,7 +302,7 @@ class MyRob(CRobLinkAngs):
                 if espace == 1:
                     if walls[0] == 0:
                         if self.rotateUp():
-                            print("watzareeeeeeee\nwatzare\nwatzare\n")
+                            #print("watzareeeeeeee\nwatzare\nwatzare\n")
                             self.positionInitY = self.positionInitY + 2
                             self.y_for_mapping = self.y_for_mapping + 2
                             self.came_from = "up"
@@ -374,7 +374,7 @@ class MyRob(CRobLinkAngs):
             self.lastwheels = (0,0)
             return True
     def rotateUp(self):
-        print("rotate up\n")
+        #print("rotate up\n")
         # 90 graus
         if self.measures.compass > 95.0 or self.measures.compass < 85.0:
             #print("rotate up")
@@ -413,7 +413,7 @@ class MyRob(CRobLinkAngs):
                 self.align(0.05,self.measures.compass,0.01,(180 * self.measures.compass / abs(self.measures.compass)))
             self.moving = True
         if(abs(self.positionInitX-self.fake_gps_x) <= 0.1):
-            print("stop moving X\n")
+            #print("stop moving X\n")
             self.driveMotors(0.00,0.00)
             self.correct_Pos()
             walls = self.watch_walls()
@@ -435,13 +435,26 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
 
             if walls[0] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
+            else:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
+            else:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
             
 
@@ -449,9 +462,9 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) > 0.1):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.05,self.measures.compass,0.01,90)
+                self.align(0.04,self.measures.compass,0.01,90)
             else:
-                self.align(0.05,self.measures.compass,0.01,-90)
+                self.align(0.04,self.measures.compass,0.01,-90)
             #self.driveMotors(0.10,0.10)
 
             self.moving = True
@@ -477,13 +490,26 @@ class MyRob(CRobLinkAngs):
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
             if walls[0] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'X')
             if walls[1] == 1:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping+1,self.y_for_mapping))
+            else:
+                self.insert_mapping((28+self.x_for_mapping+1,14-self.y_for_mapping),'X')
             if walls[2] == 1:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'|')
                 self.walls_spotted.add((self.x_for_mapping-1,self.y_for_mapping))
+            else:
+                self.insert_mapping((28+self.x_for_mapping-1,14-self.y_for_mapping),'X')
             if walls[3] == 1:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
+            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     # -------- corrigir a posicao para o meio das celulas ---------------
@@ -498,12 +524,12 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         # walls  [cima,direita,esquerda,baixo]
 
-        print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
-        print("came from :",self.came_from)
-        print("walls:",walls)
+        #print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
+        #print("came from :",self.came_from)
+        #print("walls:",walls)
 
         if self.came_from == "up":
-            print("up\nup\nup")
+            #print("up\nup\nup")
             #explain contas com os calculos dos sensores 
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
@@ -515,7 +541,7 @@ class MyRob(CRobLinkAngs):
                 wall_pos = self.positionInitX - 1
                 self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
         if self.came_from == "down":
-            print("down\ndown\ndown")
+            #print("down\ndown\ndown")
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(left_id)-0.5
@@ -526,7 +552,7 @@ class MyRob(CRobLinkAngs):
                 wall_pos = self.positionInitY - 1
                 self.last_y = wall_pos + self.sensor_calculs(center_id)+0.5
         if self.came_from == "right":
-            print("right\nright\nright")
+            #print("right\nright\nright")
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
                 self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
@@ -534,11 +560,11 @@ class MyRob(CRobLinkAngs):
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(center_id)-0.5
             if walls[3] == 1:
-                print("entrei\nentrei\nentrei\nentrei\nentrei\nentrei\n")
+                #print("entrei\nentrei\nentrei\nentrei\nentrei\nentrei\n")
                 wall_pos = self.positionInitY - 1
                 self.last_y = wall_pos + self.sensor_calculs(right_id)+0.5
         if self.came_from == "left":
-            print("left\nleft\nleft")
+            #print("left\nleft\nleft")
             # walls  [cima,direita,esquerda,baixo]
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
@@ -673,7 +699,7 @@ class MyRob(CRobLinkAngs):
             else:
                 positions[0] = 0
             
-        #self.mapping_output()
+        self.mapping_output()
         return positions 
 
 
@@ -693,7 +719,7 @@ class MyRob(CRobLinkAngs):
         return 1/self.measures.irSensor[sensor]
 
     def planning_output(self):
-        f = open(file,'w')
+        f = open(filep,'w')
         for item in self.path:
             string = str(item)
             string = string.replace('(','')
@@ -701,6 +727,21 @@ class MyRob(CRobLinkAngs):
             string=  string.replace(',','')
             f.write(string+ "\n")
         f.write("0 0")
+        f.close()
+
+    def insert_mapping(self, key, symbol):
+        if key not in self.mapping or self.mapping.get(key) == 'X':
+            self.mapping[key] = str(symbol)
+
+    def mapping_output(self):
+        f = open(filem,'w')
+        for x in range(1,28):
+            for y in range(1,56):
+                if(y,x) in self.mapping:
+                    f.write(self.mapping.get((y,x)))
+                else:
+                    f.write(' ')
+            f.write('\n')
         f.close()
 
 
@@ -736,7 +777,8 @@ rob_name = "pClient1"
 host = "localhost"
 pos = 1
 mapc = None
-file = "planning.out"
+filep = "planning.out"
+filem = "mapping.out"
 
 for i in range(1, len(sys.argv),2):
     if (sys.argv[i] == "--host" or sys.argv[i] == "-h") and i != len(sys.argv) - 1:
@@ -747,8 +789,10 @@ for i in range(1, len(sys.argv),2):
         rob_name = sys.argv[i + 1]
     elif (sys.argv[i] == "--map" or sys.argv[i] == "-m") and i != len(sys.argv) - 1:
         mapc = Map(sys.argv[i + 1])
-    elif (sys.argv[i] == "--file" or sys.argv[i] == "-f") and i != len(sys.argv) - 1:
-        file = sys.argv[i + 1]
+    elif (sys.argv[i] == "--filep" or sys.argv[i] == "-fp") and i != len(sys.argv) - 1:
+        filep = sys.argv[i + 1]
+    elif (sys.argv[i] == "--filem" or sys.argv[i] == "-fm") and i != len(sys.argv) - 1:
+        filem = sys.argv[i + 1]    
     else:
         print("Unkown argument", sys.argv[i])
         quit()
