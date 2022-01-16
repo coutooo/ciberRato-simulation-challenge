@@ -139,6 +139,8 @@ class MyRob(CRobLinkAngs):
 
         #print("BEACONNNNNNNNNNNNNNNNNNNNNNNNNN",self.measures.beacon,"|||||",self.nBeacons)
         #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
+        if self.measures.time == 5999: 
+            self.finish_m = True
         
         if self.measures.ground > -1:
             if self.measures.ground not in self.beacons_cells.values():
@@ -287,13 +289,15 @@ class MyRob(CRobLinkAngs):
                         chave = (x,y)
                         self.beacons_xy.append(chave)
                     
-                    self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
-                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
-                    #print(self.path)
-                    # for a in self.beacons_xy:
-                    #     self.path.extend(astar(key,a,visited,self.walls_spotted))
-                    # print(self.path)
+                    #self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
+                    #self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
+                    #self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
+                    i = 0
+                    for a in (0,(len(self.beacons_xy)-1)):
+                        self.path.extend(astar(self.beacons_xy[i+1],self.beacons_xy[i],visited,self.walls_spotted))
+                        i= i+1
+                    
+                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))                  
                     self.planning_output()
 
                     self.finish()
@@ -408,9 +412,9 @@ class MyRob(CRobLinkAngs):
     def moveX(self):
         if(abs(self.positionInitX-self.fake_gps_x) > 0.1):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.05,self.measures.compass,0.01,0)
+                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.05,self.measures.compass,0.01,(180 * self.measures.compass / abs(self.measures.compass)))
+                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
         if(abs(self.positionInitX-self.fake_gps_x) <= 0.1):
             #print("stop moving X\n")
@@ -462,9 +466,9 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) > 0.1):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.04,self.measures.compass,0.01,90)
+                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.04,self.measures.compass,0.01,-90)
+                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
             #self.driveMotors(0.10,0.10)
 
             self.moving = True
@@ -587,23 +591,26 @@ class MyRob(CRobLinkAngs):
         else:
             lin = (self.currentwheels[0]+self.currentwheels[1])/2
 
-        bussola = self.measures.compass
+        bussola = self.correctCompass()
 
-        # ------------ corrigir bussola -----------
-        if -5 < self.measures.compass < 5:
-            bussola = 0
-        elif 85 < self.measures.compass< 95:
-            bussola = 90
-        elif -95 < self.measures.compass <-85:
-            bussola = -90
-        elif self.measures.compass <= -170 or self.measures.compass >= 170:  
-            bussola = 180 * self.measures.compass / abs(self.measures.compass)
-        #------------------------------------------
         self.fake_gps_x = x + lin *cos(radians(bussola))
         self.fake_gps_y = y + lin *sin(radians(bussola))
 
         self.last_x = self.fake_gps_x
         self.last_y = self.fake_gps_y
+
+
+    def correctCompass(self):
+        if -15 < self.measures.compass < 15:
+            return 0
+        elif 75 < self.measures.compass< 105:
+            return 90
+        elif -105 < self.measures.compass <-75:
+            return -90
+        elif self.measures.compass <= -170 or self.measures.compass >= 170:  
+            return 180 * self.measures.compass / abs(self.measures.compass)
+
+        return self.measures.compass
 
     # identificar paredes ----------------
     def watch_walls(self):
