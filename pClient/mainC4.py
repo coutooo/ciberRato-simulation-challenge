@@ -122,17 +122,17 @@ class MyRob(CRobLinkAngs):
             if i == 0:
                 espace = espace+1
 
-        print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         #print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
         # print("x:",self.measures.x,"y:",self.measures.y)
         #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
-        print("------------------------------------------------")
-        print("fake gps:",self.fake_gps_x,self.fake_gps_y)
-        print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
-        print("------------------------------------------------")
-        print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
+        #print("------------------------------------------------")
+        #print("fake gps:",self.fake_gps_x,self.fake_gps_y)
+        #print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
+        #print("------------------------------------------------")
+        #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
         #print("visited:",self.visited_cells)
         #self.correct_Pos()
         
@@ -144,6 +144,7 @@ class MyRob(CRobLinkAngs):
         #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
         if self.measures.time == 5999: 
             self.finish_m = True
+            print(self.beacons_cells)
         
         if self.measures.ground > -1:
             if self.measures.ground not in self.beacons_cells.values():
@@ -176,12 +177,12 @@ class MyRob(CRobLinkAngs):
                             self.finish_m = True
                         else:
                             self.path = astar(key,(0,0),visited,self.walls_spotted)
-                            print(self.path)
+                            #print(self.path)
                             self.finish_0 = True
                     #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
-                        print("last_avaliable",last_avaliable)
+                        #print("last_avaliable",last_avaliable)
                         #print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
                         #print("------------------",self.path)
                 if len(self.path) != 0:
@@ -288,6 +289,7 @@ class MyRob(CRobLinkAngs):
                         else:
                             self.rotateDown()
             elif key in self.visited_cells and self.finish_m == True:
+                print(self.beacons_cells)
                 if len(self.path) == 0:
                     visited = []
                     for x,y in self.visited_cells:
@@ -297,15 +299,17 @@ class MyRob(CRobLinkAngs):
                     for x,y in self.beacons_cells:
                         chave = (x,y)
                         self.beacons_xy.append(chave)
-                    
+                    #print(self.beacons_cells)
+                    #print(self.beacons_xy)
                     #self.path.extend(astar(self.beacons_xy[1],self.beacons_xy[0],visited,self.walls_spotted))
                     #self.path.extend(astar(self.beacons_xy[2],self.beacons_xy[1],visited,self.walls_spotted))
                     #self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
+                    #print(len(self.beacons_xy))
                     i = 0
-                    for a in (0,(len(self.beacons_xy)-1)):
+                    for a in range(len(self.beacons_xy)-1):
                         self.path.extend(astar(self.beacons_xy[i+1],self.beacons_xy[i],visited,self.walls_spotted))
                         i= i+1
-                    
+             
                     self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))   
 
 
@@ -439,7 +443,7 @@ class MyRob(CRobLinkAngs):
                 self.visited_cells[key] = espace
 
 
-            print("ground",self.measures.ground)
+            #print("ground",self.measures.ground)
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
@@ -539,9 +543,9 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         # walls  [cima,direita,esquerda,baixo]
 
-        print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
+        #print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
         #print("came from :",self.came_from)
-        print("walls:",walls)
+        #print("walls:",walls)
 
 
         #ver se tem o tamanho das celulas

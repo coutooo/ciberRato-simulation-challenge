@@ -273,7 +273,7 @@ class MyRob(CRobLinkAngs):
                     #self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[2],visited,self.walls_spotted))
                     #print(self.path)
                     i = 0
-                    for a in (0,(len(self.beacons_xy)-1)):
+                    for a in range(len(self.beacons_xy)-1):
                         self.path.extend(astar(self.beacons_xy[i+1],self.beacons_xy[i],visited,self.walls_spotted))
                         i= i+1
                     
@@ -566,6 +566,9 @@ class MyRob(CRobLinkAngs):
             string = string.replace('(','')
             string= string.replace(')','')
             string=  string.replace(',','')
+            for i in self.beacons_cells.keys():
+                if i == item:
+                    string = string + " #"+ str(self.beacons_cells[i])
             f.write(string+ "\n")
         f.write("0 0")
         f.close()
