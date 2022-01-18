@@ -16,7 +16,7 @@ class MyRob(CRobLinkAngs):
     positionInitY = 0.0
     moving = False
     visited_cells = {}         #  (coordx,coordy) : "string de "o" e "c"   <- o = open , c = close
-    mapping = {(28,14): 'I'} # 28,14 -> meio do mapa (27.5,13.5)
+    mapping = {(28,14): '0'} # 28,14 -> meio do mapa (27.5,13.5)
     x_for_mapping = 0
     y_for_mapping = 0
     came_from = ""
@@ -24,6 +24,7 @@ class MyRob(CRobLinkAngs):
     beacons_cells = {}
     path = []
     finish_m = False
+    finish_0 = False
     beacons_xy= []
     fake_gps_x = 0.0
     fake_gps_y = 0.0
@@ -121,7 +122,7 @@ class MyRob(CRobLinkAngs):
             if i == 0:
                 espace = espace+1
 
-        #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
+        print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         #print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
         # print("x:",self.measures.x,"y:",self.measures.y)
         #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
@@ -171,10 +172,16 @@ class MyRob(CRobLinkAngs):
                                  if letra == "o":
                                      last_avaliable = chave
                     if last_avaliable == []:
-                        self.finish_m = True
+                        if self.finish_0 == True:
+                            self.finish_m = True
+                        else:
+                            self.path = astar(key,(0,0),visited,self.walls_spotted)
+                            print(self.path)
+                            self.finish_0 = True
                     #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
+                        print("last_avaliable",last_avaliable)
                         #print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
                         #print("------------------",self.path)
                 if len(self.path) != 0:
@@ -299,9 +306,12 @@ class MyRob(CRobLinkAngs):
                         self.path.extend(astar(self.beacons_xy[i+1],self.beacons_xy[i],visited,self.walls_spotted))
                         i= i+1
                     
-                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))                  
+                    self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))   
+
+
                     self.planning_output()
 
+                
                     self.finish()
                     quit()
             else:
@@ -361,9 +371,6 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(-0.05,+0.05)
             return False
         else:
-            self.left_wheel = 0
-            self.right_wheel = 0
-            self.lastwheels = (0,0)
             return True
     def rotateLeft(self):
         # 180 graus e -180
@@ -375,9 +382,6 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(-0.05,+0.05)
             return False
         else:
-            self.left_wheel = 0
-            self.right_wheel = 0
-            self.lastwheels = (0,0)
             return True
     def rotateUp(self):
         #print("rotate up\n")
@@ -390,9 +394,6 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(+0.05,-0.05)
             return False
         else:
-            self.left_wheel = 0
-            self.right_wheel = 0
-            self.lastwheels = (0,0)
             return True
     def rotateRight(self):
         # 0 graus
@@ -404,24 +405,20 @@ class MyRob(CRobLinkAngs):
                 self.driveMotors(-0.05,+0.05)
             return False
         else:
-            self.left_wheel = 0
-            self.right_wheel = 0
-            self.lastwheels = (0,0)
             return True
 
 
     # andar -----------------
     def moveX(self):
         center_id = 0
-        if(abs(self.positionInitX-self.fake_gps_x) > 0.05):
+        if (abs(self.positionInitX-self.fake_gps_x) > 0.05):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
-        if(abs(self.positionInitX-self.fake_gps_x) <= 0.05):
+        if (abs(self.positionInitX-self.fake_gps_x) <= 0.05):   # and (round(self.positionInitX)%2==0)
             #print("stop moving X\n")
-            self.driveMotors(0.00,0.00)
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -441,6 +438,8 @@ class MyRob(CRobLinkAngs):
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
 
+
+            print("ground",self.measures.ground)
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
@@ -461,7 +460,11 @@ class MyRob(CRobLinkAngs):
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
+
+            if self.measures.ground > 0:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),str(self.measures.ground))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
             
 
@@ -470,14 +473,13 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) > 0.05):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.05,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             #self.driveMotors(0.10,0.10)
 
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) <= 0.05):
-            self.driveMotors(0.00,0.00)
+        if(abs(self.positionInitY-self.fake_gps_y) <= 0.05):  #and (round(self.positionInitX)%2==0)
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -497,6 +499,7 @@ class MyRob(CRobLinkAngs):
             espace = tmp
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
+
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
@@ -517,7 +520,11 @@ class MyRob(CRobLinkAngs):
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping-1))
             else:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping+1),'X')
-            self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
+
+            if self.measures.ground > 0:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),str(self.measures.ground))
+            else:
+                self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping),'X')
             self.moving = False
 
     # -------- corrigir a posicao para o meio das celulas ---------------
@@ -532,7 +539,7 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         # walls  [cima,direita,esquerda,baixo]
 
-        #print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
+        print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
         #print("came from :",self.came_from)
         print("walls:",walls)
 
@@ -733,10 +740,14 @@ class MyRob(CRobLinkAngs):
     def planning_output(self):
         f = open(filep,'w')
         for item in self.path:
+            
             string = str(item)
             string = string.replace('(','')
             string= string.replace(')','')
             string=  string.replace(',','')
+            for i in self.beacons_cells.keys():
+                if i == item:
+                    string = string + " #"+ str(self.beacons_cells[i])
             f.write(string+ "\n")
         f.write("0 0")
         f.close()
