@@ -124,18 +124,19 @@ class MyRob(CRobLinkAngs):
 
         #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         #print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
-        # print("x:",self.measures.x,"y:",self.measures.y)
-        #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
+        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
-        #print("------------------------------------------------")
-        #print("fake gps:",self.fake_gps_x,self.fake_gps_y)
-        #print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
-        #print("------------------------------------------------")
+        print("------------------------------------------------")
+        print("fake gps:",self.fake_gps_x,self.fake_gps_y)
+        print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
+        print("------------------------------------------------")
         #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
         #print("visited:",self.visited_cells)
         #self.correct_Pos()
         
+        ##if self.measures.irSensor[center_id] > 90:
+         #   print("bati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\nbati\n")
 
 
         # nao é preciso fazer o caminho optimo mas tem q ir para o 0,0 no fim
@@ -182,9 +183,10 @@ class MyRob(CRobLinkAngs):
                     #print("key:",key,"goal:",last_avaliable)
                     if last_avaliable != []:
                         self.path = astar(key,last_avaliable,visited,self.walls_spotted)
+                        
                         #print("last_avaliable",last_avaliable)
                         #print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-                        #print("------------------",self.path)
+                        #print("PATHPATHPATH------------------",self.path)
                 if len(self.path) != 0:
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
@@ -289,7 +291,7 @@ class MyRob(CRobLinkAngs):
                         else:
                             self.rotateDown()
             elif key in self.visited_cells and self.finish_m == True:
-                print(self.beacons_cells)
+                #print(self.beacons_cells)
                 if len(self.path) == 0:
                     visited = []
                     for x,y in self.visited_cells:
@@ -355,7 +357,7 @@ class MyRob(CRobLinkAngs):
             # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
             #print("esperar q anda")
             #not self.moving and self.correct_Pos()
-            if (self.measures.compass > 80 and self.measures.compass < 100) or (self.measures.compass > -100 and self.measures.compass < -80):
+            if self.correctCompass() == 90 or self.correctCompass() == -90:
                 self.moveY()
             else:
                 self.moveX()
@@ -364,8 +366,9 @@ class MyRob(CRobLinkAngs):
 
     # rodar ------------------
     def rotateDown(self):
+        print("------rotate down-------\n")
         # -90 graus
-        if self.measures.compass < -95.0 or self.measures.compass > -85.0:
+        if self.measures.compass < -98.0 or self.measures.compass > -82.0:
             #print("rotate down")
             if self.measures.compass > -90 and self.measures.compass < 90:
                 self.driveMotors(+0.05,-0.05)
@@ -375,8 +378,9 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateLeft(self):
+        print("------rotate left-------\n")
         # 180 graus e -180
-        if self.measures.compass > -175 and self.measures.compass < 175.0:
+        if self.measures.compass > -178 and self.measures.compass < 178.0:
             #print("rotate left")
             if self.measures.compass <= 0:
                 self.driveMotors(+0.05,-0.05)
@@ -386,9 +390,10 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateUp(self):
+        print("------rotate up-------\n")
         #print("rotate up\n")
         # 90 graus
-        if self.measures.compass > 95.0 or self.measures.compass < 85.0:
+        if self.measures.compass > 93.0 or self.measures.compass < 88.0:
             #print("rotate up")
             if self.measures.compass > -90 and self.measures.compass < 90:
                 self.driveMotors(-0.05,+0.05)
@@ -398,8 +403,9 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateRight(self):
+        print("------rotate right-------\n")
         # 0 graus
-        if self.measures.compass < -5.0 or self.measures.compass > 5.0:
+        if self.measures.compass < -8.0 or self.measures.compass > 8.0:
             #print("rotate right")
             if self.measures.compass >= 0:
                 self.driveMotors(+0.05,-0.05)
@@ -408,18 +414,18 @@ class MyRob(CRobLinkAngs):
             return False
         else:
             return True
-
-
     # andar -----------------
     def moveX(self):
         center_id = 0
-        if (abs(self.positionInitX-self.fake_gps_x) > 0.05):
+        if (abs(self.positionInitX-self.fake_gps_x) >= 0.05):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
-        if (abs(self.positionInitX-self.fake_gps_x) <= 0.05):   # and (round(self.positionInitX)%2==0)
+        if (abs(self.positionInitX-self.fake_gps_x) < 0.05):   # and (round(self.positionInitX)%2==0)
+            print("posicao x:",abs(self.positionInitX-self.fake_gps_x))
+
             #print("stop moving X\n")
             self.correct_Pos()
             walls = self.watch_walls()
@@ -473,15 +479,17 @@ class MyRob(CRobLinkAngs):
     def moveY(self):
         center_id = 0
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
-        if(abs(self.positionInitY-self.fake_gps_y) > 0.05):
+        if(abs(self.positionInitY-self.fake_gps_y) >= 0.05):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
             #self.driveMotors(0.10,0.10)
 
+
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) <= 0.05):  #and (round(self.positionInitX)%2==0)
+        if(abs(self.positionInitY-self.fake_gps_y) < 0.05):  #and (round(self.positionInitX)%2==0)
+            print("y dif:",abs(self.positionInitY-self.fake_gps_y))
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -556,25 +564,25 @@ class MyRob(CRobLinkAngs):
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(right_id)-0.5
-            if walls[2] == 1:
-                wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
+            # if walls[2] == 1:
+            #     wall_pos = self.positionInitX - 1
+            #     self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
         if self.came_from == "down":
             #print("down\ndown\ndown")
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(left_id)-0.5
-            if walls[2] == 1:
-                wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(right_id)+0.5
+            # if walls[2] == 1:
+            #     wall_pos = self.positionInitX - 1
+            #     self.last_x = wall_pos + self.sensor_calculs(right_id)+0.5
             if walls[3] == 1:
                 wall_pos = self.positionInitY - 1
                 self.last_y = wall_pos + self.sensor_calculs(center_id)+0.5
         if self.came_from == "right":
             #print("right\nright\nright")
-            if walls[0] == 1:
-                wall_pos = self.positionInitY + 1
-                self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
+            # if walls[0] == 1:
+            #     wall_pos = self.positionInitY + 1
+            #     self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(center_id)-0.5
@@ -591,9 +599,9 @@ class MyRob(CRobLinkAngs):
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
                 self.last_x = wall_pos + self.sensor_calculs(center_id)+0.5
-            if walls[3] == 1:
-                wall_pos = self.positionInitY - 1
-                self.last_y = wall_pos + self.sensor_calculs(left_id)+0.5
+            # if walls[3] == 1:
+            #     wall_pos = self.positionInitY - 1
+            #     self.last_y = wall_pos + self.sensor_calculs(left_id)+0.5
 
     # --------- new gps------
     def fake_gps(self, x,y):
