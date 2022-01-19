@@ -312,10 +312,8 @@ class MyRob(CRobLinkAngs):
              
                     self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))   
 
-
                     self.planning_output()
 
-                
                     self.finish()
                     quit()
             else:
