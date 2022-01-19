@@ -419,9 +419,9 @@ class MyRob(CRobLinkAngs):
         center_id = 0
         if (abs(self.positionInitX-self.fake_gps_x) >= 0.05):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
         if (abs(self.positionInitX-self.fake_gps_x) < 0.05):   # and (round(self.positionInitX)%2==0)
             print("posicao x:",abs(self.positionInitX-self.fake_gps_x))
@@ -481,9 +481,9 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) >= 0.05):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.09,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
             #self.driveMotors(0.10,0.10)
 
 
@@ -564,28 +564,38 @@ class MyRob(CRobLinkAngs):
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(right_id)-0.5
-            # if walls[2] == 1:
-            #     wall_pos = self.positionInitX - 1
-            #     self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
+            if walls[2] == 1:
+                wall_pos = self.positionInitX - 1
+                self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
+            if walls[3] == 1:
+                wall_pos = self.positionInitY + 1
+                self.last_y = wall_pos + self.sensor_calculs(back_id) + 0.5
+                
         if self.came_from == "down":
             #print("down\ndown\ndown")
+            if walls[0] == 1:
+                wall_pos == self.positionInitY - 1
+                self.last_y = wall_pos -self.sensor_calculs(back_id) - 0.5
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(left_id)-0.5
-            # if walls[2] == 1:
-            #     wall_pos = self.positionInitX - 1
-            #     self.last_x = wall_pos + self.sensor_calculs(right_id)+0.5
+            if walls[2] == 1:
+                wall_pos = self.positionInitX - 1
+                self.last_x = wall_pos + self.sensor_calculs(right_id)+0.5
             if walls[3] == 1:
                 wall_pos = self.positionInitY - 1
                 self.last_y = wall_pos + self.sensor_calculs(center_id)+0.5
         if self.came_from == "right":
             #print("right\nright\nright")
-            # if walls[0] == 1:
-            #     wall_pos = self.positionInitY + 1
-            #     self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
+            if walls[0] == 1:
+                wall_pos = self.positionInitY + 1
+                self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
                 self.last_x = wall_pos - self.sensor_calculs(center_id)-0.5
+            if walls[2] == 1:
+                wall_pos = self.positionInitX - 1
+                self.last_x = wall_pos + self.sensor_calculs(back_id)-0.5
             if walls[3] == 1:
                 #print("entrei\nentrei\nentrei\nentrei\nentrei\nentrei\n")
                 wall_pos = self.positionInitY - 1
@@ -596,12 +606,15 @@ class MyRob(CRobLinkAngs):
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
                 self.last_y = wall_pos - self.sensor_calculs(right_id)-0.5
+            if walls[1] == 1:
+                wall_pos = self.positionInitX + 1
+                self.last_x = wall_pos - self.sensor_calculs(back_id)-0.5
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
                 self.last_x = wall_pos + self.sensor_calculs(center_id)+0.5
-            # if walls[3] == 1:
-            #     wall_pos = self.positionInitY - 1
-            #     self.last_y = wall_pos + self.sensor_calculs(left_id)+0.5
+            if walls[3] == 1:
+                wall_pos = self.positionInitY - 1
+                self.last_y = wall_pos + self.sensor_calculs(left_id)+0.5
 
     # --------- new gps------
     def fake_gps(self, x,y):
@@ -749,8 +762,9 @@ class MyRob(CRobLinkAngs):
 
     def planning_output(self):
         f = open(filep,'w')
+        print("beacons ",self.beacons_cells.keys())
         for item in self.path:
-            
+            print("item",item)
             string = str(item)
             string = string.replace('(','')
             string= string.replace(')','')
