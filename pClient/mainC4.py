@@ -34,6 +34,7 @@ class MyRob(CRobLinkAngs):
     right_wheel = 0
     last_x = 0
     last_y = 0
+    last_num_of_corrections = 0
 
     def __init__(self, rob_name, rob_id, angles, host):
         CRobLinkAngs.__init__(self, rob_name, rob_id, angles, host)
@@ -124,7 +125,7 @@ class MyRob(CRobLinkAngs):
 
         #print(walls,"\n<<<<<<<<<<<<<<<<<<<<<")
         #print("atual mapping",(self.x_for_mapping,self.y_for_mapping))
-        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
+        #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
         print("------------------------------------------------")
@@ -245,7 +246,6 @@ class MyRob(CRobLinkAngs):
                                 self.moveX()
                             else:
                                 self.rotateRight()
-
                 elif self.visited_cells.get(key)[0] == 'o':
                         if self.rotateUp():
                             value = ""
@@ -352,7 +352,7 @@ class MyRob(CRobLinkAngs):
                             self.came_from = "down"
                             self.moveY()
                         else:
-                            self.rotateDown()
+                            self.rotateDown()   
         else:
             # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90  
             #print("esperar q anda")
@@ -419,23 +419,25 @@ class MyRob(CRobLinkAngs):
         center_id = 0
         if (abs(self.positionInitX-self.fake_gps_x) >= 0.05):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
-        if (abs(self.positionInitX-self.fake_gps_x) < 0.05):   # and (round(self.positionInitX)%2==0)
-            print("posicao x:",abs(self.positionInitX-self.fake_gps_x))
-
-            #print("stop moving X\n")
+        if (abs(self.positionInitX-self.fake_gps_x) < 0.05) or self.measures.irSensor[center_id] > 1.5:
+            print("parei\nparei\nparei")
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
             espace = ""
+            ncorrections = 0
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
                 else:
                     espace += "c"           #c = close
+                    ncorrections += 1
+
+            self.last_num_of_corrections = ncorrections
             # cima,direita,esquerda,baixo
             tmp = ""
             if self.came_from == "left":
@@ -481,25 +483,28 @@ class MyRob(CRobLinkAngs):
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) >= 0.05):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             else:
-                self.align(0.08,self.measures.compass,0.01,self.correctCompass())
+                self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             #self.driveMotors(0.10,0.10)
 
 
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) < 0.05):  #and (round(self.positionInitX)%2==0)
-            print("y dif:",abs(self.positionInitY-self.fake_gps_y))
+        if(abs(self.positionInitY-self.fake_gps_y) < 0.05) or self.measures.irSensor[center_id] > 1.5: 
+            print("parei\nparei\nparei")
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
             espace = "" 
+            ncorrections = 0
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
                 else:
                     espace += "c"           #c = close
+                    ncorrections += 1
 
+            self.last_num_of_corrections = ncorrections
             # cima,direita,esquerda,baixo
             tmp = ""
             if self.came_from == "up":
@@ -552,6 +557,7 @@ class MyRob(CRobLinkAngs):
         #print("Correcting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\nCorrecting\n")
         #print("came from :",self.came_from)
         #print("walls:",walls)
+        print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
 
 
         #ver se tem o tamanho das celulas
@@ -560,61 +566,93 @@ class MyRob(CRobLinkAngs):
             #explain contas com os calculos dos sensores 
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
-                self.last_y = wall_pos - self.sensor_calculs(center_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(center_id)-0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
-                self.last_x = wall_pos - self.sensor_calculs(right_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(right_id)-0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(left_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(left_id)+0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[3] == 1:
                 wall_pos = self.positionInitY + 1
-                self.last_y = wall_pos + self.sensor_calculs(back_id) + 0.5
+                tmp = wall_pos + self.sensor_calculs(back_id) + 0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
                 
         if self.came_from == "down":
             #print("down\ndown\ndown")
             if walls[0] == 1:
                 wall_pos == self.positionInitY - 1
-                self.last_y = wall_pos -self.sensor_calculs(back_id) - 0.5
+                tmp = wall_pos -self.sensor_calculs(back_id) - 0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
-                self.last_x = wall_pos - self.sensor_calculs(left_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(left_id)-0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(right_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(right_id)+0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[3] == 1:
                 wall_pos = self.positionInitY - 1
-                self.last_y = wall_pos + self.sensor_calculs(center_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(center_id)+0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
         if self.came_from == "right":
             #print("right\nright\nright")
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
-                self.last_y = wall_pos - self.sensor_calculs(left_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(left_id)-0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
-                self.last_x = wall_pos - self.sensor_calculs(center_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(center_id)-0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(back_id)-0.5
+                tmp = wall_pos + self.sensor_calculs(back_id)-0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[3] == 1:
                 #print("entrei\nentrei\nentrei\nentrei\nentrei\nentrei\n")
                 wall_pos = self.positionInitY - 1
-                self.last_y = wall_pos + self.sensor_calculs(right_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(right_id)+0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
         if self.came_from == "left":
             #print("left\nleft\nleft")
             # walls  [cima,direita,esquerda,baixo]
             if walls[0] == 1:
                 wall_pos = self.positionInitY + 1
-                self.last_y = wall_pos - self.sensor_calculs(right_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(right_id)-0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
             if walls[1] == 1:
                 wall_pos = self.positionInitX + 1
-                self.last_x = wall_pos - self.sensor_calculs(back_id)-0.5
+                tmp = wall_pos - self.sensor_calculs(back_id)-0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[2] == 1:
                 wall_pos = self.positionInitX - 1
-                self.last_x = wall_pos + self.sensor_calculs(center_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(center_id)+0.5
+                if abs(tmp-self.positionInitX) <1: 
+                    self.last_x = tmp
             if walls[3] == 1:
                 wall_pos = self.positionInitY - 1
-                self.last_y = wall_pos + self.sensor_calculs(left_id)+0.5
+                tmp = wall_pos + self.sensor_calculs(left_id)+0.5
+                if abs(tmp-self.positionInitY) <1: 
+                    self.last_y = tmp
 
     # --------- new gps------
     def fake_gps(self, x,y):

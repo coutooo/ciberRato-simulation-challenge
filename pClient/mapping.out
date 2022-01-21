@@ -6,16 +6,14 @@
                                                        
                                                        
                                                        
-                                                       
-                                                       
-                         - - - - - - - - - - - - - -   
-                        |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
-                         - - X - X - - - X X - - - X   
-                        |XX0XXXXXX|XXXXX|X|XXXXXXXXX|  
-                         X - - - X X - - X - X - - X   
-                        |XXX|XXX|XXX|XXX|XXX|XXX|3XX|  
-                         - X X - X - X X - X - X - X   
-                          |X|XXXXX|XXX|X|1|XXXXX|XXX|  
+                                 - - - - - - - - - -   
+                                |XXXXXXXXX|XXXXXXXXX|  
+                         - - - - - - - - X X - - - X   
+                        |XXXXXXX|X|     |X|XXXXXXXXX|  
+                         - - - - X   - - X - X - - X   
+                        |XX0|XXXXX| |XXX|XXX|XXX|3XX|  
+                         - X - - - - X X - X - X - X   
+                          |X|     |XXX|X|1|XXXXX|XXX|  
                          - X - - - X - X X - X X - X   
                         |XXX|XXXXXXX|X|X|XXXXX|XXXXX|  
                          X - X - - - X X X - - X - X   
@@ -23,5 +21,7 @@
                          X X X X - - X - - X - - - X   
                         |XXXXXXXXXXX|XXXXXXXXXXXXXXX|  
                          - - - - - - - - - - - - - -   
+                                                       
+                                                       
                                                        
                                                        
