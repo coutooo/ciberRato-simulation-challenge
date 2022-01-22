@@ -426,7 +426,7 @@ class MyRob(CRobLinkAngs):
             else:
                 self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
-        if (abs(self.positionInitX-self.fake_gps_x) < 0.055) and (self.measures.irSensor[center_id] > 1.7 or self.measures.irSensor[center_id]<0.9):
+        if (abs(self.positionInitX-self.fake_gps_x) < 0.055) and (self.measures.irSensor[center_id] > 1.5 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\nparei")
             print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
@@ -494,7 +494,7 @@ class MyRob(CRobLinkAngs):
 
 
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) < 0.055) and (self.measures.irSensor[center_id] > 1.7 or self.measures.irSensor[center_id]<0.9):
+        if(abs(self.positionInitY-self.fake_gps_y) < 0.055) and (self.measures.irSensor[center_id] > 1.5 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\np  arei")
             print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
