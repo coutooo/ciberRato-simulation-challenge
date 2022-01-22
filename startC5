@@ -1,0 +1,15 @@
+#!/bin/bash
+
+ARGS="--param ../Labs/rmi-2122/C4-config.xml"
+ARGS+=" --lab ../Labs/rmi-2122/C3-lab-4.xml"
+ARGS+=" --grid ../Labs/rmi-2122/C3-grid-4.xml"
+ARGS+=" --scoring 3"
+(cd simulator; ./simulator $ARGS) &
+
+sleep 1
+
+(cd Viewer; ./Viewer --autoconnect)
+
+killall simulator
+
+echo Bye

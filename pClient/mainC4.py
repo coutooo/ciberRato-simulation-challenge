@@ -127,10 +127,10 @@ class MyRob(CRobLinkAngs):
         #print("objetivo x:",self.positionInitX,"objetivo y:",self.positionInitY)
         #print("path:",self.path)
         #print("beacons:",self.beacons_cells)
-        print("------------------------------------------------")
-        print("fake gps:",self.fake_gps_x,self.fake_gps_y)
-        print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
-        print("------------------------------------------------")
+        #print("------------------------------------------------")
+        #print("fake gps:",self.fake_gps_x,self.fake_gps_y)
+        #print("real gps:",self.measures.x-self.tempx,self.measures.y-self.tempy)
+        #print("------------------------------------------------")
         #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
         #print("visited:",self.visited_cells)
         #self.correct_Pos()
@@ -189,6 +189,7 @@ class MyRob(CRobLinkAngs):
                         #print("Rato burroooooooooooooOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
                         #print("PATHPATHPATH------------------",self.path)
                 if len(self.path) != 0:
+                    #print("\npath",self.path)
                     next = self.path[len(self.path)-1]
                     sentidoX = self.x_for_mapping - next[0]    # +esquerda - direita
                     sentidoY = self.y_for_mapping - next[1]    # +baixo - cima
@@ -269,6 +270,9 @@ class MyRob(CRobLinkAngs):
                         else:
                             self.rotateRight()
                 elif self.visited_cells.get(key)[2] == 'o':
+                        #print("\n",key,"\n")
+                        #print(self.visited_cells.get(key))
+                        #print("\naquiaquiaqui")
                         if self.rotateLeft():
                             value = ""
                             value += self.visited_cells.get(key)[0] + self.visited_cells.get(key)[1]+ "c" + self.visited_cells.get(key)[3]
@@ -339,6 +343,7 @@ class MyRob(CRobLinkAngs):
                             self.rotateRight()
                     elif walls [2] == 0:
                         if self.rotateLeft():
+                            #print("espace == 1")
                             self.positionInitX = self.positionInitX - 2
                             self.x_for_mapping = self.x_for_mapping - 2
                             self.came_from = "left"
@@ -366,7 +371,7 @@ class MyRob(CRobLinkAngs):
 
     # rodar ------------------
     def rotateDown(self):
-        print("------rotate down-------\n")
+        #print("------rotate down-------\n")
         # -90 graus
         if self.measures.compass < -98.0 or self.measures.compass > -82.0:
             #print("rotate down")
@@ -378,7 +383,7 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateLeft(self):
-        print("------rotate left-------\n")
+        #print("------rotate left-------\n")
         # 180 graus e -180
         if self.measures.compass > -178 and self.measures.compass < 178.0:
             #print("rotate left")
@@ -390,7 +395,7 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateUp(self):
-        print("------rotate up-------\n")
+        #print("------rotate up-------\n")
         #print("rotate up\n")
         # 90 graus
         if self.measures.compass > 93.0 or self.measures.compass < 88.0:
@@ -403,7 +408,7 @@ class MyRob(CRobLinkAngs):
         else:
             return True
     def rotateRight(self):
-        print("------rotate right-------\n")
+        #print("------rotate right-------\n")
         # 0 graus
         if self.measures.compass < -8.0 or self.measures.compass > 8.0:
             #print("rotate right")
@@ -428,12 +433,13 @@ class MyRob(CRobLinkAngs):
             self.moving = True
         if (abs(self.positionInitX-self.fake_gps_x) < 0.055) and (self.measures.irSensor[center_id] > 1.5 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\nparei")
-            print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
+            #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
-            print(walls,"\n",key,"\n")
+            #print(walls,"\n",key,"\n")
             espace = ""
+            espace_exists = ""
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
@@ -449,6 +455,14 @@ class MyRob(CRobLinkAngs):
             espace = tmp
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
+            else:
+                for i in self.visited_cells.get(key):
+                    espace_exists += i
+                if self.came_from == "left":
+                    espace_exists = espace_exists[0] + "c" + espace_exists[2] + espace_exists[3]
+                elif self.came_from == "right":
+                    espace_exists = espace_exists[0] + espace_exists[1] + "c" + espace_exists[3]
+                self.visited_cells[key] = espace_exists
 
 
             #print("ground",self.measures.ground)
@@ -496,12 +510,13 @@ class MyRob(CRobLinkAngs):
             self.moving = True
         if(abs(self.positionInitY-self.fake_gps_y) < 0.055) and (self.measures.irSensor[center_id] > 1.5 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\np  arei")
-            print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
+            #print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
-            print(walls,"\n",key,"\n")
+            #print(walls,"\n",key,"\n")
             espace = "" 
+            espace_exists = ""
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
@@ -517,6 +532,15 @@ class MyRob(CRobLinkAngs):
             espace = tmp
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
+            else:
+                for i in self.visited_cells.get(key):
+                    espace_exists += i
+                if self.came_from == "up":
+                    espace_exists = espace_exists[0] +espace_exists[1] + espace_exists[2] + "c"
+                elif self.came_from == "down":
+                    espace_exists = "c" + espace_exists[1] + espace_exists[2] + espace_exists[3]
+                self.visited_cells[key] = espace_exists
+                 
 
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')

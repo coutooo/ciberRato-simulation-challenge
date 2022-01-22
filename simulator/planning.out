@@ -8,22 +8,22 @@
                                                        
                                                        
                                                        
-                         - - - - - - - - - - - - - -   
-                        |XXXXXXX|XXXXXXXXX|XXXXXXXXX|  
-                         - - X - X - - - X X - - - X   
-                        |XX0XXXXXX|XXXXX|X|XXXXXXXXX|  
-                         X - - - X X - - X - X - - X   
-                        |XXX|XXX|XXX|XXX|XXX|XXX|3XX|  
-                         - X X - X - X X - X - X - X   
-                          |X|XXXXX|XXX|X|1|XXXXX|XXX|  
-                         - X - - - X - X X - X X - X   
-                        |XXX|XXXXXXX|X|X|XXXXX|XXXXX|  
-                         X - X - - - X X X - - X - X   
-                        |X|2|X|XXXXXXX|XXX|XXXXXXXXX|  
-                         X X X X - - X - - X - - - X   
-                        |XXXXXXXXXXX|XXXXXXXXXXXXXXX|  
-                         - - - - - - - - - - - - - -   
                                                        
                                                        
- 0 1 3 2 0
-116.000000
+ - - - - - - - - - - - - - -                           
+|X|XXXXXXX|XXXXX|XXXXXXXXXX5|                          
+ X X - - X - - X X X - - - X                           
+|XXXXXXXXX|4XXXX|X|XXXXX|XXX|                          
+ - X X - X X - X X - X - - X                           
+|XXX|XXX|XXX|XXXXXXX|XX1XXXX|                          
+ - X X - X - - - - X - X - X                           
+|XXX|XXXXX|XXX|X|XXXXXXX|XXX|                          
+ X X X X - X - X X - X - - X                           
+|XXX|X|X|XXX|3|XXXXX|X|XXXXX|                          
+ X - X - - X X - X - X X - X                           
+|X|XXXXXXXXXXX|XX0|XXXXXXXXX|                          
+ X - - X - - X X - X - - - X                           
+|XXXXXXX|XX2XXXXXXXXXXXX|XXX|                          
+ - - - - - - - - - - - - - -                           
+ 0 1 5 4 3 2 0
+80.000000

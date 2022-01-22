@@ -348,6 +348,7 @@ class MyRob(CRobLinkAngs):
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
             espace = ""
+            espace_exists = ""
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
@@ -363,6 +364,14 @@ class MyRob(CRobLinkAngs):
             espace = tmp
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
+            else:
+                for i in self.visited_cells.get(key):
+                    espace_exists += i
+                if self.came_from == "left":
+                    espace_exists = espace_exists[0] + "c" + espace_exists[2] + espace_exists[3]
+                elif self.came_from == "right":
+                    espace_exists = espace_exists[0] + espace_exists[1] + "c" + espace_exists[3]
+                self.visited_cells[key] = espace_exists
 
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
@@ -402,6 +411,7 @@ class MyRob(CRobLinkAngs):
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
             espace = "" 
+            espace_exists = ""
             for i in walls:
                 if i == 0:
                     espace += "o"           #o = open
@@ -417,6 +427,15 @@ class MyRob(CRobLinkAngs):
             espace = tmp
             if key not in self.visited_cells:
                 self.visited_cells[key] = espace
+            else:
+                for i in self.visited_cells.get(key):
+                    espace_exists += i
+                if self.came_from == "up":
+                    espace_exists = espace_exists[0] +espace_exists[1] + espace_exists[2] + "c"
+                elif self.came_from == "down":
+                    espace_exists = "c" + espace_exists[1] + espace_exists[2] + espace_exists[3]
+                self.visited_cells[key] = espace_exists
+
             if walls[0] == 1:
                 self.insert_mapping((28+self.x_for_mapping,14-self.y_for_mapping-1),'-')
                 self.walls_spotted.add((self.x_for_mapping,self.y_for_mapping+1))
