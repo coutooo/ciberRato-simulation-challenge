@@ -417,14 +417,18 @@ class MyRob(CRobLinkAngs):
     # andar -----------------
     def moveX(self):
         center_id = 0
+        left_id = 1
+        right_id = 2
+        back_id = 3
         if (abs(self.positionInitX-self.fake_gps_x) >= 0.055):
             if self.measures.compass > -10.0 and self.measures.compass < 10:
                 self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             else:
                 self.align(0.10,self.measures.compass,0.01,self.correctCompass())
             self.moving = True
-        if (abs(self.positionInitX-self.fake_gps_x) < 0.055) and (self.measures.irSensor[center_id] > 2 or self.measures.irSensor[center_id]<0.9):
+        if (abs(self.positionInitX-self.fake_gps_x) < 0.055) and (self.measures.irSensor[center_id] > 1.7 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\nparei")
+            print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
@@ -478,6 +482,9 @@ class MyRob(CRobLinkAngs):
 
     def moveY(self):
         center_id = 0
+        left_id = 1
+        right_id = 2
+        back_id = 3
         # bussola: 0 -> direita, 90 -> cima, esquerda -> 180,baixo ->-90 
         if(abs(self.positionInitY-self.fake_gps_y) >= 0.055):
             if self.measures.compass > 80.0 and self.measures.compass < 100.0:
@@ -487,8 +494,9 @@ class MyRob(CRobLinkAngs):
 
 
             self.moving = True
-        if(abs(self.positionInitY-self.fake_gps_y) < 0.055) and (self.measures.irSensor[center_id] > 2 or self.measures.irSensor[center_id]<0.9):
+        if(abs(self.positionInitY-self.fake_gps_y) < 0.055) and (self.measures.irSensor[center_id] > 1.7 or self.measures.irSensor[center_id]<0.9):
             #print("parei\nparei\np  arei")
+            print("sensores:",self.measures.irSensor[center_id],"back:",self.measures.irSensor[back_id],"left:",self.measures.irSensor[left_id],"right",self.measures.irSensor[right_id])
             self.correct_Pos()
             walls = self.watch_walls()
             key = (self.x_for_mapping,self.y_for_mapping)
