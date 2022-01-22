@@ -145,7 +145,7 @@ class MyRob(CRobLinkAngs):
         #print("GROUNDDDDDDDDDDDDDDDDDDDDDDD",self.measures.ground)
         if self.measures.time == 5999: 
             self.finish_m = True
-            print(self.measures.time)
+            print("\nTime: ",self.measures.time)
             #print(self.beacons_cells)
         
         if self.measures.ground > -1:
@@ -319,7 +319,7 @@ class MyRob(CRobLinkAngs):
                     self.path.extend(astar(self.beacons_xy[0],self.beacons_xy[i],visited,self.walls_spotted))   
 
                     self.planning_output()
-                    print(self.measures.time)
+                    print("\nTime: ",self.measures.time)
                     self.finish()
                     quit()
             else:
