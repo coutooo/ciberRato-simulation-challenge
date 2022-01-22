@@ -371,9 +371,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass < -98.0 or self.measures.compass > -82.0:
             #print("rotate down")
             if self.measures.compass > -90 and self.measures.compass < 90:
-                self.driveMotors(+0.10,-0.10)
+                self.driveMotors(+0.11,-0.11)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
-                self.driveMotors(-0.10,+0.10)
+                self.driveMotors(-0.11,+0.11)
             return False
         else:
             return True
@@ -383,9 +383,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > -178 and self.measures.compass < 178.0:
             #print("rotate left")
             if self.measures.compass <= 0:
-                self.driveMotors(+0.10,-0.10)
+                self.driveMotors(+0.11,-0.11)
             if self.measures.compass > 0:
-                self.driveMotors(-0.10,+0.10)
+                self.driveMotors(-0.11,+0.11)
             return False
         else:
             return True
@@ -396,9 +396,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass > 93.0 or self.measures.compass < 88.0:
             #print("rotate up")
             if self.measures.compass > -90 and self.measures.compass < 90:
-                self.driveMotors(-0.10,+0.10)
+                self.driveMotors(-0.11,+0.11)
             if self.measures.compass >= 90 or self.measures.compass <= -90:
-                self.driveMotors(+0.10,-0.10)
+                self.driveMotors(+0.11,-0.11)
             return False
         else:
             return True
@@ -408,9 +408,9 @@ class MyRob(CRobLinkAngs):
         if self.measures.compass < -8.0 or self.measures.compass > 8.0:
             #print("rotate right")
             if self.measures.compass >= 0:
-                self.driveMotors(+0.10,-0.10)
+                self.driveMotors(+0.11,-0.11)
             if self.measures.compass < 0:
-                self.driveMotors(-0.10,+0.10)
+                self.driveMotors(-0.11,+0.11)
             return False
         else:
             return True
